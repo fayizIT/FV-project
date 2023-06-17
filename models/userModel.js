@@ -29,6 +29,10 @@ const userSchema = mongoose.Schema({
     token:{
         type:String,
         default:''
+    },
+    blocked:{
+        type:Boolean,
+        default:false,
     }
 
 });

@@ -1,269 +1,3 @@
-// const User = require('../models/userModel');
-// const bcrypt = require("bcrypt");
-// const nodemailer = require("nodemailer");
-// const config = require("../config/config");
-// const async = require('hbs/lib/async');
-// const randormstring = require("randomstring")
-
-
-
-
-
-// const securePassword = async (password) => {
-//   try {
-//     const passwordHash = await bcrypt.hash(password, 10);
-//     return passwordHash;
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-// const sendVerifyMail = async (name, email, user_id) => {
-//   try {
-//     const transporter = nodemailer.createTransport({
-//       host: 'smtp.ethereal.email',
-//       port: 587,
-//       secure: false,
-//       requireTls: true,
-//       auth: {
-//         user: config.emailUser,
-//         pass: config.emailPassword,
-//       },
-//     });
-
-//     const mailOptions= {
-//       from: "fayizcj94@gmail.com",
-//       to: email,
-//       subject: "to verfiy mail",
-//       html:
-//         "<p> hi" +
-//         name +
-//         ',please click here to <a href="http://localhost:3000/verify?id=' +
-//         user_id +
-//         '">verify</a>ypur mail.</p>',
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info)  => {
-//       if (error) {
-//         console.log(error);
-//       } else {
-//         console.log("Email has been sent:", info.response);
-//       }
-//     });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-// const insertUser = async (req, res) => {
-//   try {
-//     const spassword = await securePassword(req.body.password);
-//     const user = new User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       mobile: req.body.mobile,
-//       password: spassword,
-//       is_admin: 0, // Set is_verified to 0 initially
-//     });
-
-//     const userData = await user.save();
-//     if (userData) {
-//       sendVerifyMail(req.body.name, req.body.email, userData._id);
-//       res.redirect("/success"); // Redirect to the success page
-//     } else {
-//       res.render("users/signup", { message: "Your registration has failed" });
-//     }
-//   } catch (error) {
-//     res.render("error", { error });
-//   }
-// };
-
-// //for reset password send mail
-// const sendResetpasswordmail = async (name, email, token) => {
-//   try {
-//     const transporter = nodemailer.createTransport({
-//       host: 'smtp.ethereal.email',
-//       port: 587,
-//       secure: false,
-//       requireTls: true,
-//       auth: {
-//         user: config.emailUser,
-//         pass: config.emailPassword,
-//       },
-//     });
-
-//     const mailOptions= {
-//       from: config.emailUser,
-//       to: email,
-//       subject: "to Reset password",
-//       html:
-//         "<p> hi" +
-//         name +
-//         ',please click here to <a href="http://localhost:3000/forget-password?id=' +
-//         token +
-//         '">Reset</a>your password.</p>',
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info)  => {
-//       if (error) {
-//         console.log(error);
-//       } else {
-//         console.log("Email has been sent:", info.response);
-//       }
-//     });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-
-// const loadSignup = async (req, res) => {
-//   try {
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.render("users/signup");
-//   } catch (error) {
-//     res.render("error", { error });
-//   }
-// };
-
-// const successPage = async (req, res) => {
-//   try {
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.render("users/success", { signInPage: true });
-//   } catch (error) {
-//     res.render("error", { error });
-//   }
-// };
-
-
-
-// const verifyMail = async (req, res) => {
-//   try {
-//     const updateInfo = await User.updateOne(
-//       { _id: req.query.id },
-//       { $set: { is_verified: 1 } }
-//     );
-//     console.log(updateInfo);
-//     res.render("users/email-verified");
-//   } catch (error) {
-//     console.log(error.message);
-//     res.render("error", { error });
-//   }
-// };
-
-// const loadlogin = async (req, res) => {
-//   try {
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.render("users/login");
-//   } catch (error) {
-//     console.log(error.message);
-//     res.render("error", { error });
-//   }
-// };
-
-// const verifyLogin = async (req, res) => {
-//   try {
-//     const email = req.body.email;
-//     const password = req.body.password;
-//     const userData = await User.findOne({ email: email });
-//     console.log(userData);
-//     if (userData) {
-//       const passwordMatch = await bcrypt.compare(password, userData.password);
-//       if (passwordMatch) {
-//         if (userData.is_verified === 0) {
-//           res.render('users/login', { message: "Please verify your email" });
-//         } else {
-//           req.session.user_id = userData._id;
-//           res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//           res.redirect('/home');
-//         }
-//       } else {
-//         res.render('users/login', { message: "Email and password are incorrect" });
-//       }
-//     } else {
-//       res.render('users/login', { message: "Email and password are incorrect" });
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//     res.render("error", { error });
-//   }
-// };
-// const userLogout = async(req,res)=>{
-//   try {
-//     req.session.destroy();
-//     res.redirect('/')
-    
-//   } catch (error) {
-//     console.log(error.message);
-    
-//   }
-// };
-// //forget password code start
-// const  forgetLoad = async(req,res)=>{
-//   try {
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.render('users/forget')
-    
-//   } catch (error) {
-//     console.log(error.message);
-    
-//   }
-// };
-// const sendResetLink = async(req, res) => {
-//   try {
-//     const email = req.body.email;
-//     User.findOne({email:email});
-//     if(userData){
-//       if(userData.is_verified == 0){
-//         res.render('/users/forget',{message:"Please verify your mail."})
-//       }
-//       else{
-//         const randomString = randormstring.generate();
-//         const updatedData = await User.updateOne({email:email},{$set:{token:randomString}});
-//         sendResetpasswordmail(userData.name,userData.email,randomString)
-//         res.render('/users/forget',{message:"please check your mail for reset your password."})
-//       }
-//     }
-//     else{
-//       res.render('/users/forget');
-
-//     }
-   
-//   } catch (error) {
-//     console.log(error.message);
-//     res.render('error', { error });
-//   }
-// };
-
-// const loadindex = async (req, res) => {
-//   try {
-//     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-//     res.render('users/index');
-//   } catch (error) {
-//     console.log(error.message);
-//     res.render("error", { error });
-//   }
-
- 
-// };
-
-
-
-
-// module.exports = {
-//   insertUser,
-//   loadSignup,
-//   successPage,
-  
-//   verifyMail,
-//   loadlogin,
-//   verifyLogin,
-//   loadindex,
-//   userLogout,
-//   forgetLoad,
-//   sendResetLink,
-// };
-
 
 const User = require('../models/userModel');
 const bcrypt = require("bcrypt");
@@ -428,26 +162,32 @@ const loadlogin = async (req, res) => {
 //checking the email and password before login
 const verifyLogin = async (req, res) => {
   try {
-    const email = req.body.email;
-    const password = req.body.password;
-    const userData = await User.findOne({ email: email });
-    console.log(userData);
-    if (userData) {
-      const passwordMatch = await bcrypt.compare(password, userData.password);
-      if (passwordMatch) {
-        if (userData.is_verified === 0) {
-          res.render('users/login', { message: "Please verify your email" });
-        } else {
-          req.session.user_id = userData._id;
-          res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-          res.redirect('/home');
-        }
-      } else {
-        res.render('users/login', { message: "Email and password are incorrect" });
-      }
-    } else {
-      res.render('users/login', { message: "Email and password are incorrect" });
+    const { email, password } = req.body;
+    const userData = await User.findOne({ email });
+
+    if (!userData) {
+      return res.render('users/login', { message: "Email and password are incorrect" });
     }
+
+    // Check if the user is blocked
+    if (userData.blocked) {
+      return res.render('users/login', { message: "User is blocked. Please contact the administrator." });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, userData.password);
+
+    if (!passwordMatch) {
+      return res.render('users/login', { message: "Email and password are incorrect" });
+    }
+
+    if (userData.is_verified === 0) {
+      return res.render('users/login', { message: "Please verify your email" });
+    }
+
+    req.session.user_id = userData._id;
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.redirect('/home');
+
   } catch (error) {
     console.log(error.message);
     res.render("error", { error });

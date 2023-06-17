@@ -186,6 +186,67 @@ const adminlogout = async (req, res) => {
     });
   };
 
+
+
+  const editUser = async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log(id);
+      const userData = await User.findById({ _id: id }).lean();
+      console.log(userData);
+      if (userData) {
+        // res.redirect("/admin/home");
+        res.render("admin/edit-user", {
+          user: userData,
+        });
+      } else {
+        res.redirect("/admin/home");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+
+  const updateUser = async (req, res) => {
+    try {
+      const userData = await User.findByIdAndUpdate(
+        { _id: req.body.id },
+        {
+          $set: {
+            name: req.body.name,
+            email: req.body.email,
+            mobile: req.body.mobile,
+            is_verified: req.body.verified,
+          },
+        }
+      );
+  
+      res.redirect("/admin/home");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+  const blockUser = async (req,res)=>{
+    try {
+      const id = req.query.id;
+    console.log(id);
+    const userData = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: { blocked: true } }
+    );
+    // console.log(userData);
+    res.redirect("/admin/user");
+      
+    } catch (error) {
+      console.log(message.error);
+      
+    }
+  }
+
 module.exports = {
   loginLoad,
   loginVerify,
@@ -195,5 +256,8 @@ module.exports = {
   insertProducts,
   loadCategory,
   addCategory,
-  addUsers
+  addUsers,
+  editUser,
+  updateUser,
+  blockUser
 };

@@ -74,8 +74,8 @@
                             <tr>
                                 <th scope="col">SL NO</th>
                                 
-                                <th scope="col">BRAND</th>
-                                <th scope="col">PRODUCT-NAME</th> 
+                                <th scope="col">ITEM</th>
+                                {{!-- <th scope="col">PRODUCT-NAME</th>  --}}
                                 <th scope="col">CATEGORY</th>
                                 <th scope="col">PRICE</th>
                                 {{!-- <th scope="col">IN-STOCK</th> --}}
@@ -92,7 +92,7 @@
                             {{#each products}}
                             <tr>
                                 <th class="align-middle" scope="row">{{serialNumber}}</th>
-                                <td class="align-middle">{{item}}</td>
+                                <td class="align-middle">{{brand}}</td>
                                 {{!-- <td class="align-middle">{{productname}}</td> --}}
                                  <td class="align-middle">{{category}}</td>
                                 <td class="align-middle">{{price}}</td>
@@ -130,13 +130,13 @@
             <form action="/admin/add-products" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="mb-3">
-                         <label for="brand" class="form-label">BRAND</label>
+                         <label for="brand" class="form-label">ITEM</label>
                         <input type="text" name="brand" class="form-control" required>
                     </div>
-                     <div class="mb-3">
+                     {{!-- <div class="mb-3">
                          <label for="product-name" class="form-label">PRODUCT NAME</label>
                         <input type="text" name="productname" class="form-control" required>
-                    </div>
+                    </div> --}}
                      <div class="mb-3">
                          <label for="category" class="form-label">Category</label>
                          <select name="category" class="form-control" required>
