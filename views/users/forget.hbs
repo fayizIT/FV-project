@@ -161,12 +161,17 @@ a{color:inherit;text-decoration:none}
       <div class="sign-in-htm">
         <form action="/forget" method="POST"> <!-- Add form element and specify action and method -->
           <div class="group">
-            <label for="email" class="label">Send Resend Link</label>
+            <label for="email" class="label">Send Reset Link</label>
             <input id="email" name="email" type="email" class="input" data-type="email">
           </div>
           <div class="group">
             <input type="submit" class="button" value="Sign In">
           </div>
+          {{#if message}}
+          <div class="group">
+            <p class="error-message">{{message}}</p>
+          </div>
+          {{/if}}
         </form>
       </div>
     </div>

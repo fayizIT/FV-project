@@ -1,0 +1,66 @@
+<style>
+  .profile-container {
+    width: 400px;
+    margin: 0 auto;
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .profile-header h2 {
+    color: #333;
+  }
+
+  .profile-item {
+    margin-bottom: 10px;
+  }
+
+  .profile-item label {
+    font-weight: bold;
+    color: #555;
+  }
+
+  .profile-item p {
+    margin: 0;
+    color: #777;
+  }
+
+  .logout-button {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .logout-button a {
+    margin-right: 10px;
+  }
+</style>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <h2>Profile Information</h2>
+  </div>
+  <div class="profile-body">
+    <div class="profile-item">
+      <label>Name:</label>
+      <p>{{user.name}}</p>
+    </div>
+    <div class="profile-item">
+      <label>Email:</label>
+      <p>{{user.email}}</p>
+    </div>
+    <div class="profile-item">
+      <label>Mobile:</label>
+      <p>{{user.mobile}}</p>
+    </div>
+  </div>
+  <div class="logout-button">
+    <a href="/logout" class="btn btn-primary">Logout</a>
+    <a href="/edit/?id={{user._id}}" class="btn btn-primary">Edit profile</a>
+  </div>
+</div>
