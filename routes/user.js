@@ -20,10 +20,9 @@ router.get('/logout', auth.isLogin, userController.userLogout);
 router.get('/forget', auth.isLogOut, userController.forgetLoad);
 router.post('/forget', userController.sendResetLink);
 router.get('/forget-password',  auth.isLogOut, userController.forgetPasswordLoad)
-
 router.post('/forget-password', userController.resetPassword)
+router.get('/forget-password', userController.resetPassword);
 router.get('/profile', auth.isLogin, userController.loadprofile);
-
 router.get('/verification',userController.verificationLoad)
 router.post('/verification', userController.sendVerificationLink)
 router.get("/edit", auth.isLogin, userController.editLoad)

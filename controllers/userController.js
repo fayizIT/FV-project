@@ -78,33 +78,31 @@ const insertUser = async (req, res) => {
 const sendResetpasswordmail = async (name, email, token) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: "smtp.ethereal.email",
       port: 587,
       secure: false,
-      requireTls: true,
+      requireTLS: true,
       auth: {
         user: config.emailUser,
         pass: config.emailPassword,
       },
     });
-
-    const mailOptions = {
+    const mailOption = {
       from: config.emailUser,
       to: email,
-      subject: "Reset Your Password",
+      subject: "to Reset Password",
       html:
-        "<p>Hi " +
+        "<p> hi" +
         name +
-        ', please click <a href="http://localhost:3000/forget-password?token=' +
+        ',please click here to <a href="http://localhost:3000/forget-password?token=' +
         token +
-        '">here</a> to reset your password.</p>',
+        '">reset </a>your password</p>',
     };
-
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOption, (error, info) => {
       if (error) {
         console.log(error);
       } else {
-        console.log("Email has been sent:", info.response);
+        console.log("email has been sent:-", info.response);
       }
     });
   } catch (error) {
@@ -310,12 +308,12 @@ const forgetPasswordLoad = async(req,res)=>{
     const token = req.query.token;
     const tokenData = await User.findOne({token:token});
     if (tokenData) {
-      res.render("users/forget-password",{user_id:tokenData._id});
+      res.render("users/forget-password",{user_id: tokenData._id});
       
     } else {     
       res.render("error",{message:"Token is invalid."})
     }
-    
+    console.log("reseting started");
   } catch (error) {
     console.log(err.message);
     
@@ -324,31 +322,25 @@ const forgetPasswordLoad = async(req,res)=>{
 
 
 // reseting the password
-const resetPassword = async (req,res)=>{
+
+const resetPassword = async (req, res) => {
   try {
+    
     const password = req.body.password;
-    const user_id =req.body.user_id;
-
-    const secure_Password = await securePassword(password);
-
-    const updatedData = await User.findByIdAndUpdate(
-      user_id,
-      { password: secure_Password, token: "" },
-      { new: true } // Add this option to return the updated document
-    );
-
-    if (updatedData) {
-      // Render the success template with the updated password
-      res.render("users/forget-password", { password: password });
-    } else {
-      // Handle the case when the user is not found or the update fails
-      res.render("error", { message: "Failed to reset the password" });
-    }
+    const user_id = req.body.user_id;
+    const sec_password = await securePassword(password);
+    const updatedData = await User.findByIdAndUpdate(user_id, {
+      $set: { password: sec_password, token: "" },
+    },{ new: true },);
+    console.log("reseetting done");
+    res.redirect("/login");
   } catch (error) {
-    console.log(error.message); // Log the error message if an error occurs
-    res.render("error", { message: "An error occurred while resetting the password" });
+    console.log(error.message);
   }
 };
+
+
+    
 
 //for verification send link
 

@@ -5,6 +5,7 @@ const { userLogout } = require("./userController");
 const Category = require("../models/categoryModel");
 const { log } = require("handlebars/runtime");
 const multer = require("multer");
+const products = require("../models/productModel");
 
 
 
@@ -101,7 +102,7 @@ const adminlogout = async (req, res) => {
   const insertProducts = async (req, res) => {
     try {
       const newProduct = new Product({
-        brand: req.body.brand,
+        item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
         price: req.body.price,
@@ -229,23 +230,129 @@ const adminlogout = async (req, res) => {
     }
   };
 
-
-  const blockUser = async (req,res)=>{
+  const blockUser = async (req, res) => {
     try {
       const id = req.query.id;
-    console.log(id);
-    const userData = await User.findByIdAndUpdate(
-      { _id: id },
-      { $set: { blocked: true } }
-    );
-    // console.log(userData);
-    res.redirect("/admin/user");
-      
+      console.log(id);
+      const userData = await User.findByIdAndUpdate(
+        { _id: id },
+        { $set: { blocked: true } }
+      );
+      // console.log(userData);
+      res.redirect(req.get('/admin/users'));
     } catch (error) {
       console.log(message.error);
-      
     }
+  };
+
+  const unblockUser = async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log(id);
+      const userData = await User.findByIdAndUpdate(
+        { _id: id },
+        { $set: { blocked: false } }
+      );
+      // console.log(userData);
+      res.redirect("/admin/user");
+    } catch (error) {
+      console.log(message.error);
+    }
+  };
+
+
+
+
+
+const EditProduct = async (req, res) => {
+    try {
+
+      
+        const id = req.query.id;
+        const productData = await Product.findById(id).lean();
+        
+        if (productData) {
+            res.render("admin/edit-products", { products: productData });
+           
+        } else {
+            res.redirect("/admin/home");
+           
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const updateProduct = async (req,res) => {
+  try {
+    console.log("HI UPDATE")
+    const id = req.body.id; // Get the product ID from the request body
+    console.log(req.body)
+    // Create an object with the updated product data
+    const updatedProduct = {
+      item: req.body.item,
+      category: req.body.category,
+      price: req.body.price,
+      description: req.body.description
+    };
+
+    const updatedData = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
+    
+   
+      res.redirect("/admin/edit-products");
+    
+  } catch (error) {
+    console.log(error.message);
   }
+};
+
+
+// const updateProduct = async (req, res) => {
+//   try {
+//     const userData = await User.findByIdAndUpdate(
+//       { _id: req.body.id },
+//       {
+//         $set: {
+//           item: req.body.item,
+//       category: req.body.category,
+//       price: req.body.price,
+//       description: req.body.description
+//         },
+//       }
+//     );
+//     const updatedData = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
+//     if (updatedData) {
+//       res.redirect("/admin/edit-products");
+//     } else {
+//       // Handle the case when the product is not found
+//       res.redirect("/admin/home");
+//     }
+//   }
+    
+//    catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+  
+
+
+   
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   loginLoad,
@@ -259,5 +366,8 @@ module.exports = {
   addUsers,
   editUser,
   updateUser,
-  blockUser
+  blockUser,
+  unblockUser,
+  EditProduct,
+  updateProduct
 };

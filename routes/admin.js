@@ -1,8 +1,12 @@
 var express = require("express");
 var session = require("express-session");
+
 const adminAuth = require("../middleware/adminAuth");
 var multer = require("multer");
 const path = require("path");
+
+
+
 
 
 
@@ -58,6 +62,16 @@ router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminAuth.isLogin,adminController.updateUser);
 
 router.get("/block",adminAuth.isLogin,adminController.blockUser)
+router.get("/unblock", adminAuth.isLogin, adminController.unblockUser);
+
+
+// router.get("/edit-product", adminAuth.isLogin, adminController.EditProduct);
+// router.post("/edit-product", adminAuth.isLogin, adminController.updateProduct);
+
+
+router.get("/edit-product", adminController.EditProduct);
+router.post("/edit-products",uploads.single("image"),adminController.updateProduct);
+
 
 
 router.get("*", (req, res) => {
