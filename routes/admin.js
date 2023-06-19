@@ -72,6 +72,12 @@ router.get("/unblock", adminAuth.isLogin, adminController.unblockUser);
 router.get("/edit-product", adminController.EditProduct);
 router.post("/edit-products",uploads.single("image"),adminController.updateProduct);
 
+router.get(
+  "/unlist-products",
+  adminAuth.isLogin,
+  adminController.unlistProducts
+);
+router.get("/list-products", adminAuth.isLogin, adminController.listProducts);
 
 
 router.get("*", (req, res) => {

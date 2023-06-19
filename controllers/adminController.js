@@ -5,7 +5,7 @@ const { userLogout } = require("./userController");
 const Category = require("../models/categoryModel");
 const { log } = require("handlebars/runtime");
 const multer = require("multer");
-const products = require("../models/productModel");
+
 
 
 
@@ -101,16 +101,14 @@ const adminlogout = async (req, res) => {
 
   const insertProducts = async (req, res) => {
     try {
+      console.log("dtarted");
       const newProduct = new Product({
         item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
         price: req.body.price,
-        // offPrice:dealprice,
-        // quantity:stock,
         images: req.file.filename,
         description: req.body.description,
-        // strapColour:req.body.strapColour,
       });
   
       const addProductData = await newProduct.save();
@@ -262,8 +260,6 @@ const adminlogout = async (req, res) => {
 
 
 
-
-
 const EditProduct = async (req, res) => {
     try {
 
@@ -282,6 +278,8 @@ const EditProduct = async (req, res) => {
         console.log(error.message);
     }
 };
+
+
 
 const updateProduct = async (req,res) => {
   try {
@@ -307,46 +305,33 @@ const updateProduct = async (req,res) => {
 };
 
 
-// const updateProduct = async (req, res) => {
-//   try {
-//     const userData = await User.findByIdAndUpdate(
-//       { _id: req.body.id },
-//       {
-//         $set: {
-//           item: req.body.item,
-//       category: req.body.category,
-//       price: req.body.price,
-//       description: req.body.description
-//         },
-//       }
-//     );
-//     const updatedData = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
-//     if (updatedData) {
-//       res.redirect("/admin/edit-products");
-//     } else {
-//       // Handle the case when the product is not found
-//       res.redirect("/admin/home");
-//     }
-//   }
-    
-//    catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
-  
-
-
+const unlistProducts = async (req, res) => {
+  try {
    
-
+    const id = req.query.id;
    
-
-
-
-
-
-
-
+    const ProductData = await Product.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: true } }
+    );
+    res.redirect("/admin/add-products");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const listProducts = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const ProductData = await Product.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: false } }
+    );
+    res.redirect("/admin/add-products");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 
 
@@ -369,5 +354,7 @@ module.exports = {
   blockUser,
   unblockUser,
   EditProduct,
-  updateProduct
+  updateProduct,
+  unlistProducts,
+  listProducts
 };

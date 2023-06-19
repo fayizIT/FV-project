@@ -29,7 +29,7 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
-  deleted: {
+  unlist: {
     type: Boolean,
     default: false,
   },

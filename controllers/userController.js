@@ -1,9 +1,12 @@
 
 const User = require('../models/userModel');
 const bcrypt = require("bcrypt");
+const Product = require("../models/productModel");
+
 const nodemailer = require("nodemailer");
 const config = require("../config/config");
 const randomstring = require("randomstring");
+const categoryModel = require('../models/categoryModel');
 
 const securePassword = async (password) => {
   try {
@@ -229,9 +232,11 @@ const sendResetLink = async (req, res) => {
 //go to homepage
 const loadindex = async (req, res) => {
   try {
+    const productData =await Product.find({unlist:false}).lean()
+    const categoryData =await categoryModel.find({unlist:false}).lean()
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     const userData = await User.findById({_id:req.session.user_id})
-    res.render('users/index',{user:userData});
+    res.render('users/index',{user:userData,Product:productData,category:categoryData});
   } catch (error) {
     console.log(error.message);
     res.render("error", { error });
