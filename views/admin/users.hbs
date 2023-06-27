@@ -119,26 +119,33 @@
   </thead>
   <tbody>
     {{#each user}}
-    <tr>
-      <th class="align-middle" scope="row">{{serialNumber}}</th>
-      <td class="align-middle">{{name}}</td>
-      <td class="align-middle">{{email}}</td>
-      <td class="align-middle">{{mobile}}</td>
-      {{#if is_verified}}
-      <td class="align-middle">VERIFIED</td>
-      {{else}}
-      <td class="align-middle">NOT VERIFIED</td>
-      {{/if}}
-      <td class="align-middle text-center">
-        {{#if blocked}}
-        <a href="/admin/unblock?id={{this._id}}" class="btn btn-outline-primary m-2" style="background-color: blue; color: white;">UNBLOCK</a>
-        {{else}}
-        <a href="/admin/block?id={{this._id}}" class="btn btn-outline-danger m-2" style="background-color: red; color: white;">BLOCK</a>
-        {{/if}}
-        <a href="/admin/edit-user?id={{this._id}}" class="btn btn-outline-success m-2" style="background-color: green; color: white;">EDIT</a>
-      </td>
-    </tr>
-    {{/each}}
+<tr>
+  <th class="align-middle" scope="row">{{serialNumber}}</th>
+  <td class="align-middle">{{name}}</td>
+  <td class="align-middle">{{email}}</td>
+  <td class="align-middle">{{mobile}}</td>
+  {{#if is_verified}}
+  <td class="align-middle">VERIFIED</td>
+  {{else}}
+  <td class="align-middle">NOT VERIFIED</td>
+  {{/if}}
+  <td class="align-middle text-center">
+    {{#if blocked}}
+    <a href="/admin/unblock?id={{this._id}}" class="btn btn-outline-primary m-2" style="background-color: blue; color: white;">UNBLOCK</a>
+    {{else}}
+    <a href="/admin/block?id={{this._id}}" class="btn btn-outline-danger m-2" style="background-color: red; color: white;" onclick="return confirmBlock()">BLOCK</a>
+    {{/if}}
+    <a href="/admin/edit-user?id={{this._id}}" class="btn btn-outline-success m-2" style="background-color: green; color: white;">EDIT</a>
+  </td>
+</tr>
+{{/each}}
+
+<script>
+  function confirmBlock() {
+    return confirm("Are you sure you want to block this user?");
+  }
+</script>
+
   </tbody>
 </table>
 

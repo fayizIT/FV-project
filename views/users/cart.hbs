@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Fresh-Hub - Free Bootstrap 4 Template by Colorlib</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap"
+		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="/css/open-iconic-bootstrap.min.css">
+	<link rel="stylesheet" href="/css/animate.css">
+
+	<link rel="stylesheet" href="/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/css/owl.theme.default.min.css">
+	<link rel="stylesheet" href="/css/magnific-popup.css">
+
+	<link rel="stylesheet" href="/css/aos.css">
+
+	<link rel="stylesheet" href="/css/ionicons.min.css">
+
+	<link rel="stylesheet" href="/css/bootstrap-datepicker.css">
+	<link rel="stylesheet" href="/c/ss/jquery.timepicker.css">
+
+
+	<link rel="stylesheet" href="/css/flaticon.css">
+	<link rel="stylesheet" href="/css/icomoon.css">
+	<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="goto-here">
+	<div class="py-1 bg-success">
+		<div class="container">
+			<div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
+				<div class="col-lg-12 d-block">
+					<div class="row d-flex">
+						<div class="col-md pr-4 d-flex topper align-items-center">
+							<div class="icon mr-2 d-flex justify-content-center align-items-center"><span
+									class="icon-phone2"></span>
+							</div>
+							<span class="text">+91 9946340822</span>
+						</div>
+						<div class="col-md pr-4 d-flex topper align-items-center">
+							<div class="icon mr-2 d-flex justify-content-center align-items-center"><span
+									class="icon-paper-plane"></span></div>
+							<span class="text">freshHub@gmail.com</span>
+						</div>
+						<div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
+							<span class="text">3-5 Business days delivery &amp; Free Returns</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-danger" id="ftco-navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">Fresh-Hub</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+				aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="oi oi-menu"></span> Menu
+			</button>
+
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item active"><a href="/home" class="nav-link">Home</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false">Shop</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown04">
+							<a class="dropdown-item" href="shop.html">Shop</a>
+							<a class="dropdown-item" href="wishlist.html">Wishlist</a>
+							<a class="dropdown-item" href="product-single.html">Single Product</a>
+							<a class="dropdown-item" href="cart.html">Cart</a>
+							<a class="dropdown-item" href="checkout.html">Checkout</a>
+						</div>
+					</li>
+					<li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+					<li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+					<li class="nav-item cta cta-colored"><a href="/cart" class="nav-link"><span
+								class="icon-shopping_cart"></span>[0]</a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{user.name}}</a>
+						<div class="dropdown-menu" aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="profile">Profile</a>
+							<a class="dropdown-item" href="/settings">Settings</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="/logout">Logout</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="hero-wrap hero-bread" style="background-image: url('images/bg_1.jpg');">
+		<div class="container">
+			<div class="row no-gutters slider-text align-items-center justify-content-center">
+				<div class="col-md-9 ftco-animate text-center">
+					<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span class="mr-2"><a
+								href="index.html">my cart</a></span> <span>My cart</span></p>
+					<h1 class="mb-0 bread">my cart</h1>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{#if products}}
+	<section class="ftco-section ftco-cart">
+
+
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 ftco-animate">
+					<div class="cart-list">
+						<table class="table">
+							<thead class="bg-success">
+								<tr class="text-center black-font">
+									<th style="color: black;">No.</th>
+									<th style="color: black;">Product Image</th>
+									<th style="color: black;">Item</th>
+									<th style="color: black;">Price</th>
+									<th style="color: black;">kg</th>
+									<th style="color: black;">Total</th>
+								</tr>
+							</thead>
+							<tbody>
+
+								{{#each products}}
+								<tr class="text-center">
+									<td class="product-number">{{@index}}</td>
+									<td class="image-prod">
+										<a href="/view-product?id={{this._id}}">
+											<img class="img-fluid" src="/uploads/{{images.[0]}}" alt="img" width="50px"
+												height="50px">
+										</a>
+									</td>
+									<td class="item">
+										<p>{{this.item}}</p>
+									</td>
+									<td class="price">{{this.price}}</td>
+									<td class="quantity">
+										{{!-- <div class="input-group mb-3">
+											<span class="input-group-btn">
+												<button type="button"
+													class="quantity-left-minus btn btn-danger btn-number"
+													data-type="minus" data-field="">
+													<span class="ion-ios-remove"></span>
+												</button>
+											</span>
+											<input type="text" name="quantity"
+												class="quantity form-control input-number" value="1" min="1" max="100">
+											<span class="input-group-btn">
+												<button type="button"
+													class="quantity-right-plus btn btn-success btn-number"
+													data-type="plus" data-field="">
+													<span class="ion-ios-add"></span>
+												</button>
+											</span>
+										</div> --}}
+
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<button class="btn btn-outline-secondary" id="decrementBtn"
+													onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.kg}})">-</button>
+											</div>
+											<input type="text" class="form-control text-center"
+												id="quantityInput_{{this._id}}" value="{{this.kg}}" min="1"
+												readonly>
+											<div class="input-group-append">
+												<button class="btn btn-outline-secondary" id="incrementBtn"
+													onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.kg}})">+</button>
+											</div>
+										</div>
+									</td>
+									<td class="total">{{total}}</td>
+								</tr>
+								{{/each}}
+							</tbody>
+						</table>
+					</div>
+					<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+						<div class="cart-total mb-3">
+							<h3>Cart Totals</h3>
+							<p class="d-flex">
+								<span>Subtotal</span>
+								<span>₹0.00</span>
+							</p>
+							<p class="d-flex">
+								<span>kg</span>
+								<span>{{totalKg}}</span>
+							</p>
+							<p class="d-flex">
+								<span>Price</span>
+								<span>₹0.00</span>
+							</p>
+							<hr>
+							<p class="d-flex total-price">
+								<span>Grand Total</span>
+								<span>₹{{total}}</span>
+							</p>
+						</div>
+						<p>
+							<a href="checkout.html" class="btn btn-success py-3 px-4">Proceed to Checkout</a>
+						</p>
+					</div>
+				</div>
+			</div>
+	</section>
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		function changeQuantity(proId, count, userId, quantity) {
+
+
+			$.ajax({
+				url: "/change-product-quantity",
+				method: "post",
+				data: {
+					productId: proId,
+					count: count,
+					userId: userId,
+					kg: kg,
+				},
+				success: (response) => {
+					console.log(response)
+					if (response.deleteProduct) {
+						location.reload(); // Reload the page
+					} else {
+						console.log(response, 'ajax response')
+						const quantityInput = document.getElementById(`quantityInput_${proId}`);
+						quantityInput.value = response.quantity;
+
+
+						const productTotal = document.querySelector(`#productTotal_${proId}`);
+						productTotal.textContent = response.productTotal;
+
+						const subtotal = document.getElementById(`summary`);
+						subtotal.textContent = response.subtotal;
+
+						const summarySubtotal = document.getElementById(`summary-subtotal`);
+						summarySubtotal.textContent = response.subtotal
+
+					}
+
+
+				}
+
+
+			})
+		}
+	</script>
+
+
+
+
+
+	</script>
+	{{else}}
+	<h1>
+		Cart Empty
+	</h1>
+	{{/if}}
+
+
+
+
+	<script>
+		function decreaseQuantity(i, size, color, stock) {
+
+			var quantityElement = $('#quantity-' + i);
+			var kg = parseInt(kgElement.text());
+
+			// Decrease the kg by 1
+			if (kg > 1) {
+				kg -= 1;
+				quantityElement.text(kg);
+				if (kg <= stock) {
+
+					$('#message-' + i).text('');
+				}
+				// Send AJAX request to update the kg on the server
+				updateQuantity(kg, i, size, color);
+			}
+		}
+
+		function increaseQuantity(i, size, color, stock) {
+			var quantityElement = $('#quantity-' + i);
+			var kg = parseInt(quantityElement.text());
+			// if(quantity<=stock){
+			kg += 1;
+			quantityElement.text(kg);
+			if (kg < stock) {
+
+				updateQuantity(quantity, i, size, color);
+			}
+			// }
+			// Increase the quantity by 1
+
+			if (kg > stock) {
+				// Show message below the buttons
+				$('#message-' + i).text('Exceeded the stock limit');
+				return; // Exit the function
+			}
+			// Send AJAX request to update the quantity on the server
+		}
+
+
+
+		function updateQuantity(kg, i, size, color) {
+			// console.log('hai: ', quantity, i)
+			var size = size
+			var color = color
+
+			$.ajax({
+				url: '/updateitem', // Replace with your actual URL
+				method: 'POST', // or 'GET' depending on your server configuration
+
+				data: {
+					quantity: quantity,
+					productId: i,
+					size: size,
+					color: color
+				},
+				success: function (response) {
+					// window.location.reload()
+					const kg = $('#displayQuantity')
+					kg.text(response.displayQuantity)
+
+					// Handle success response
+					console.log('Quantity updated successfully');
+
+				},
+				error: function (xhr, status, error) {
+					// Handle error response
+					console.error('Failed to update quantity');
+				}
+
+			});
+		}
+	</script>
+
+
+
+
+
+	<!-- view-product.hbs -->
+
+
+
+	<!-- loader -->
+	<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+			<circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+			<circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+				stroke="#F96D00" />
+		</svg></div>
+
+
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/jquery-migrate-3.0.1.min.js"></script>
+	<script src="/js/popper.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/jquery.easing.1.3.js"></script>
+	<script src="/js/jquery.waypoints.min.js"></script>
+	<script src="/js/jquery.stellar.min.js"></script>
+	<script src="/js/owl.carousel.min.js"></script>
+	<script src="/js/jquery.magnific-popup.min.js"></script>
+	<script src="/js/aos.js"></script>
+	<script src="/js/jquery.animateNumber.min.js"></script>
+	<script src="/js/bootstrap-datepicker.js"></script>
+	<script src="/js/scrollax.min.js"></script>
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+	<script src="/js/google-map.js"></script>
+	<script src="/js/main.js"></script>
+
+</body>
+
+</html>

@@ -27,6 +27,19 @@ router.get('/verification',userController.verificationLoad)
 router.post('/verification', userController.sendVerificationLink)
 router.get("/edit", auth.isLogin, userController.editLoad)
 router.post('/edit', userController.updateProfile)
+router.get('/otp-verification',  auth.isLogOut, userController.otpLoad)
+router.post("/otp-verification", auth.isLogOut,userController.sendOtp);
+router.post('/otp-verified', auth.otpLog, userController.verifyOtp);
+
+router.get('/view-product',  auth.isLogin, userController.viewPage);
+router.get('/cart', auth.isLogin, userController.getCart);
+router.post('/addTocart',auth.isLogin,userController.addToCart);
+router.post('/change-product-quantity',userController.changeQuantity)
+
+
+
+
+
 
 
 

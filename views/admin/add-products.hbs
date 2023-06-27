@@ -31,6 +31,7 @@
     <link href="css/style.css" rel="stylesheet">
 </head>
 
+
 <body>
 
     <div class="dashboard-wrapper">
@@ -65,8 +66,8 @@
                                         <th class="align-middle" scope="row">{{serialNumber}}</th>
                                         <td class="align-middle">{{item}}</td>
                                         <td class="align-middle">{{category}}</td>
-                                        <td class="align-middle">{{price}}</td>
-                                        <td class="align-middle"><img src="/uploads/{{images}}" alt="{{images}}"
+                                        <td class="align-middle">₹{{price}}</td>
+                                        <td class="align-middle"><img src="/uploads/{{images.[0]}}" alt="{{images}}"
                                                 width="50px" height="50px"></td>
                                         <td class="align-middle">{{description}}</td>
                                         <td class="align-middle">
@@ -124,7 +125,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Image</label>
-                            <input type="file" name="image" class="form-control" required>
+                            <input type="file" name="image" class="form-control" multiple required>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>

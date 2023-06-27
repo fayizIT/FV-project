@@ -18,6 +18,9 @@ const userSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    confirmPassword: {
+        type: String,
+    },
     is_admin:{
         type:String,
         required:true

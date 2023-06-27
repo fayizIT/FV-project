@@ -46,7 +46,7 @@ const loginVerify = async (req, res) => {
 
 const loadDash = async (req, res) => {
   try {
-    User.findById({_id:req.session})
+    User.findById({_id:req.session.user_id})
     res.render('admin/home', );
   } catch (error) {
     console.log(error.message);
@@ -101,13 +101,18 @@ const adminlogout = async (req, res) => {
 
   const insertProducts = async (req, res) => {
     try {
-      console.log("dtarted");
+      var arrayImage =[]
+      for (let i = 0; i < req.files.length; i++) {
+        arrayImage[i] = req.files[i].filename;
+      }
+      console.log("started");
       const newProduct = new Product({
         item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
         price: req.body.price,
-        images: req.file.filename,
+        // images: req.file.filename,
+        images: arrayImage,
         description: req.body.description,
       });
   
@@ -210,8 +215,7 @@ const adminlogout = async (req, res) => {
 
   const updateUser = async (req, res) => {
     try {
-      const userData = await User.findByIdAndUpdate(
-        { _id: req.body.id },
+      const userData = await User.findByIdAndUpdate({ _id: req.body.id },
         {
           $set: {
             name: req.body.name,
@@ -232,10 +236,7 @@ const adminlogout = async (req, res) => {
     try {
       const id = req.query.id;
       console.log(id);
-      const userData = await User.findByIdAndUpdate(
-        { _id: id },
-        { $set: { blocked: true } }
-      );
+      const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: true } });
       // console.log(userData);
       res.redirect(req.get('/admin/users'));
     } catch (error) {
@@ -247,12 +248,9 @@ const adminlogout = async (req, res) => {
     try {
       const id = req.query.id;
       console.log(id);
-      const userData = await User.findByIdAndUpdate(
-        { _id: id },
-        { $set: { blocked: false } }
-      );
+      const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: false } });
       // console.log(userData);
-      res.redirect("/admin/user");
+      res.redirect(req.get('/admin/users'));
     } catch (error) {
       console.log(message.error);
     }
@@ -261,9 +259,7 @@ const adminlogout = async (req, res) => {
 
 
 const EditProduct = async (req, res) => {
-    try {
-
-      
+    try {     
         const id = req.query.id;
         const productData = await Product.findById(id).lean();
         
@@ -283,6 +279,10 @@ const EditProduct = async (req, res) => {
 
 const updateProduct = async (req,res) => {
   try {
+    var arrayImage =[]
+    for (let i = 0; i < req.files.length; i++) {
+      arrayImage[i] = req.files[i].filename;
+    }
     console.log("HI UPDATE")
     const id = req.body.id; // Get the product ID from the request body
     console.log(req.body)
@@ -291,7 +291,8 @@ const updateProduct = async (req,res) => {
       item: req.body.item,
       category: req.body.category,
       price: req.body.price,
-      description: req.body.description
+      description: req.body.description,
+      images: arrayImage,
     };
 
     const updatedData = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
@@ -335,6 +336,33 @@ const listProducts = async (req, res) => {
 
 
 
+const unlistCategory = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const categoryData = await Category.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: true } }
+    );
+    res.redirect("/admin/category");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const listCategory = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const categoryData = await Category.findByIdAndUpdate(
+      { _id: id },
+      { $set: { unlist: false } }
+    );
+    res.redirect("/admin/category");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
 
 
 
@@ -356,5 +384,7 @@ module.exports = {
   EditProduct,
   updateProduct,
   unlistProducts,
-  listProducts
+  listProducts,
+  unlistCategory,
+  listCategory
 };

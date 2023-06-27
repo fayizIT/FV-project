@@ -24,11 +24,14 @@ const productSchema = new Schema({
     type: Number,
     require: true,
   },
-  images: { type: String, require: true },
+  images: { type: [String], 
+    require: true },
+
   description: {
     type: String,
     required: true,
   },
+  
   unlist: {
     type: Boolean,
     default: false,

@@ -1,24 +1,11 @@
 var express = require("express");
 var session = require("express-session");
-
 const adminAuth = require("../middleware/adminAuth");
 var multer = require("multer");
 const path = require("path");
-
-
-
-
-
-
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../public/uploads"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+  destination: function (req, file, cb) {cb(null, path.join(__dirname, "../public/uploads"));},
+  filename: function (req, file, cb) {cb(null, Date.now() + "-" + file.originalname);},});
 const uploads = multer({ storage: storage });
 
 
@@ -35,23 +22,16 @@ var adminController = require("../controllers/adminController");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-/* GET home page. */
-// router.get("/admin", function (req, res, next) {
-//   res.render("index", { title: "Express" });
-// });
+
 router.get("/", adminAuth.islogOut,adminController.loginLoad);
-router.post("/", adminController.loginVerify);
+router.post("/", adminAuth.islogOut,adminController.loginVerify);
 router.get("/home", adminAuth.isLogin,adminController.loadDash);
 router.get("/logout", adminAuth.isLogin, adminController.adminlogout);
 router.get("/add-products", adminAuth.isLogin, adminController.loadProducts);
-router.post(
-  "/add-products",
-  uploads.single("image"),
-  adminController.insertProducts
-);
+router.post("/add-products",uploads.array("image",4),adminController.insertProducts);
 
 
-  router.get("/category", adminAuth.isLogin, adminController.loadCategory);
+router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
 
 
@@ -70,14 +50,14 @@ router.get("/unblock", adminAuth.isLogin, adminController.unblockUser);
 
 
 router.get("/edit-product", adminController.EditProduct);
-router.post("/edit-products",uploads.single("image"),adminController.updateProduct);
+router.post("/edit-products",uploads.array("image",4),adminController.updateProduct);
 
-router.get(
-  "/unlist-products",
-  adminAuth.isLogin,
-  adminController.unlistProducts
-);
+router.get("/unlist-products",adminAuth.isLogin,adminController.unlistProducts);
 router.get("/list-products", adminAuth.isLogin, adminController.listProducts);
+
+
+router.get("/unlist-category",adminAuth.isLogin,adminController.unlistCategory);
+router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 
 
 router.get("*", (req, res) => {

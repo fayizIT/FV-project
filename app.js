@@ -6,6 +6,8 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const hbs = require('hbs');
+const Handlebars = require('handlebars')
+
 
 
 const mongoose = require("mongoose");
@@ -34,6 +36,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+
+
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
