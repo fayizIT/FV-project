@@ -21,26 +21,17 @@ var adminController = require("../controllers/adminController");
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-
-
 router.get("/", adminAuth.islogOut,adminController.loginLoad);
 router.post("/", adminAuth.islogOut,adminController.loginVerify);
 router.get("/home", adminAuth.isLogin,adminController.loadDash);
 router.get("/logout", adminAuth.isLogin, adminController.adminlogout);
 router.get("/add-products", adminAuth.isLogin, adminController.loadProducts);
 router.post("/add-products",uploads.array("image",4),adminController.insertProducts);
-
-
 router.get("/category", adminAuth.isLogin, adminController.loadCategory);
 router.post("/category", adminController.addCategory);
-
-
 router.get("/users", adminAuth.isLogin, adminController.addUsers);
-
-
 router.get("/edit-user", adminAuth.isLogin, adminController.editUser);
 router.post("/edit-user", adminAuth.isLogin,adminController.updateUser);
-
 router.get("/block",adminAuth.isLogin,adminController.blockUser)
 router.get("/unblock", adminAuth.isLogin, adminController.unblockUser);
 
@@ -60,9 +51,7 @@ router.get("/unlist-category",adminAuth.isLogin,adminController.unlistCategory);
 router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 
 
-router.get("*", (req, res) => {
-  res.redirect("/admin");
-});
+router.get("*", (req, res) => { res.redirect("/admin");});
 
 // router.get("/table", adminController.tableData);
 

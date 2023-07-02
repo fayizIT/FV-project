@@ -109,10 +109,49 @@
 
 
 
+<style>
+  .secondary-images {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .secondary-images .image-thumbnail {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  .secondary-images .image-thumbnail img {
+    width: 100px;
+    height: 100px; /* Set the desired height */
+    object-fit: cover; /* Ensure the image fills the container */
+  }
+
+  .main-product-image {
+    width: 400px; /* Adjust the size as needed */
+    height: auto;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .button-container button {
+    background-color: #008CBA;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  
+</style>
+
 <div class="container">
   <div class="row">
-
-     
     <div class="col-md-6">
       <div class="main-product-image">
         <img class="img-fluid" src="/uploads/{{singleProduct.images.[0]}}" alt="img">
@@ -133,9 +172,6 @@
     </div>
 
     <div class="col-md-6">
-     
-
-      
       <!-- Add other details about the product here -->
       <h2>{{singleProduct.item}}</h2>
       <p>Price: ₹{{singleProduct.price}}/kg</p>
@@ -143,126 +179,31 @@
       <!-- Add additional product details as needed -->
 
       <!-- Buttons -->
+      {{!-- {{#each singleProduct}} --}}
       <div class="button-container">
-         
-        <a href="#"  class="cart-btn">
-    
-            <button
-            
-              style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-right: 10px;" onclick='addToCart("{{this._id}}", event); showSweetAlert();'>
-              Add to Cart
-              
-            </button>
-           
-          </a>
-          
-        <div class="quantity-container">
-          <button class="minus-btn" onclick="decrementQuantity()">-</button>
-          <input type="number" id="quantity-input" value="1" min="1">
-          <button class="plus-btn" onclick="incrementQuantity()">+</button>
-        </div>
-        <div class="cart-buttons">
-        </div>
-
-        
+        <button
+          style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-right: 10px;"
+          onclick='addToCart("{{this._id}}", event); showSweetAlert();'>
+          Add to Cart
+        </button>
+        {{!-- <button style="background-color: #008CBA; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-right: 10px;">
+          Buy Now
+        </button>
+        <button style="background-color: #F8C471; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+          Add to Wishlist
+        </button> --}}
       </div>
-     
+      {{!-- {{/each}} --}}
     </div>
-    
   </div>
 </div>
 
-<style>
-  /* Existing styles */
-
-  .secondary-images {
-    display: flex;
-    margin-top: 10px;
-  }
-
-  .secondary-images .image-thumbnail {
-    margin-right: 10px;
-    cursor: pointer;
-  }
-
-  .secondary-images .image-thumbnail img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-  }
-
-  .main-product-image {
-    width: 400px;
-    height: auto;
-  }
-
-  .button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-  }
-
-  .button-container .quantity-container {
-    display: flex;
-    align-items: center;
-  }
-
-  .button-container .quantity-container button {
-    background-color: #ddd;
-    border: none;
-    cursor: pointer;
-    padding: 5px 10px;
-  }
-
-  .button-container .quantity-container input {
-    width: 50px;
-    text-align: center;
-    border: none;
-  }
-
-  .button-container .cart-buttons {
-    display: flex;
-    align-items: center;
-  }
-
-  .button-container .cart-buttons button {
-    background-color: #008CBA;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-
-  .button-container .cart-buttons button:last-child {
-    margin-right: 0;
-  }
-</style>
-
 <script>
-  /* Existing JavaScript */
-
   function changeMainImage(imageUrl) {
     const mainImage = document.querySelector('.main-product-image img');
     mainImage.src = imageUrl;
   }
-
-  function incrementQuantity() {
-    const quantityInput = document.getElementById('quantity-input');
-    quantityInput.value = parseInt(quantityInput.value) + 1;
-  }
-
-  function decrementQuantity() {
-    const quantityInput = document.getElementById('quantity-input');
-    if (parseInt(quantityInput.value) > 1) {
-      quantityInput.value = parseInt(quantityInput.value) - 1;
-    }
-  }
 </script>
-
-
-
 
     <script>
 function addToCart(productId, event) {
