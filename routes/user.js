@@ -5,7 +5,7 @@ const config = require("../config/config")
 const userController = require('../controllers/userController');
 const auth = require("../middleware/auth");
 // // //(it is for temp for understanding)already passing the express generator inatall generator
-const bodyParser = require('body-parser');
+
 
 
 router.get('/signup', auth.isLogOut, userController.loadSignup);
@@ -33,7 +33,12 @@ router.post('/otp-verified', auth.otpLog, userController.verifyOtp);
 router.get('/view-product',  auth.isLogin, userController.viewPage);
 router.get('/cart', auth.isLogin, userController.getCart);
 router.post('/addTocart',auth.isLogin,userController.addToCart);
-router.post('/change-product-quantity',userController.changeQuantity)
+router.post('/change-product-quantity',userController.changeQuantity);
+router.get("/checkout", auth.isLogin, userController.checkoutLoad);
+router.get("/address", auth.isLogin, userController.loadAddress);
+// router.post("/address", userController.addressList);
+
+
 
 
 

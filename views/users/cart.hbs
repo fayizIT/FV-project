@@ -29,7 +29,108 @@
 	<link rel="stylesheet" href="/css/flaticon.css">
 	<link rel="stylesheet" href="/css/icomoon.css">
 	<link rel="stylesheet" href="/css/style.css">
+
+
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		integrity="sha512-X2nDpHOh6D07QVr5n4tP21JtrX3NBEmKblE2M1zIN7G0nhzvei33A46kglxG7aO3PYp48FsESMIbPfzGS3sF4w=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 </head>
+
+<style>
+	body {
+		margin: 0;
+		color: #6a6f8c;
+		background: #c8c8c8;
+		font: 600 16px/18px 'Open Sans', sans-serif;
+	}
+
+	.cart-empty {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 100vh;
+	}
+
+	.cart-empty h1 {
+		font-size: 28px;
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.cart-empty h3 {
+		font-size: 18px;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	.continue-btn {
+		background-color: #1161ee;
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 5px;
+		text-decoration: none;
+		font-size: 16px;
+	}
+
+	.continue-btn:hover {
+		background-color: #0a4fbf;
+	}
+	.cart-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .cart-empty h1 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .cart-empty h3 {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .continue__btn {
+    background-color: #1161ee;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .continue__btn:hover {
+    background-color: #0a4fbf;
+  }
+
+
+	.quantity .input-group .btn {
+		padding: 5px 10px;
+	}
+
+	.quantity .input-group-prepend .btn,
+	.quantity .input-group-append .btn {
+		border-radius: 0;
+	}
+
+	.quantity .input-group-prepend .btn i,
+	.quantity .input-group-append .btn i {
+		font-size: 16px;
+	}
+
+	.kg-input {
+		padding: 5px 10px;
+	}
+</style>
 
 <body class="goto-here">
 	<div class="py-1 bg-success">
@@ -109,226 +210,100 @@
 		</div>
 	</div>
 
-	{{#if products}}
-	<section class="ftco-section ftco-cart">
+{{#if products}}
+<section class="ftco-section ftco-cart">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 ftco-animate">
+        <div class="cart-list">
+          <table class="table">
+            <thead class="bg-success">
+              <tr class="text-center black-font">
+                <th style="color: black;">Product Image</th>
+                <th style="color: black;">Item</th>
+                <th style="color: black;">Price</th>
+                <th style="color: black;">kg</th>
+                <th style="color: black;">Total</th>
+                <th style="color: black;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each products}}
+              <tr class="text-center">
+                <td class="image-prod">
+                  <a href="/view-product?id={{this._id}}">
+                    <img class="img-fluid" src="/uploads/{{images.[0]}}" alt="img" width="50px" height="50px">
+                  </a>
+                </td>
+                <td class="item">
+                  <p>{{this.item}}</p>
+                </td>
+                <td class="price">{{this.price}}</td>
+                <td class="quantity">
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <button class="btn btn-outline-secondary" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.kg}})">
+        <i class="fas fa-minus"></i>
+      </button>
+    </div>
+    <input type="text" class="form-control text-center kg-input" id="kgInput_{{this._id}}" value="{{this.kg}}" min="1" readonly>
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.kg}})">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+</td>
+                <td class="total" id="productTotal_{{this._id}}">
+                  <span id="productTotal">{{total}}</span>
+                </td>
+                <td class="cart__close">
+                  <div class="col-md-1 col-lg-1 col-xl-1">
+                       <button type="button" class="btn btn-link delete-product-btn" onclick="showDeleteConfirmation('{{this._id}}','{{this.user_id}}','{{this.name}}')">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
 
-
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 ftco-animate">
-					<div class="cart-list">
-						<table class="table">
-							<thead class="bg-success">
-								<tr class="text-center black-font">
-									<th style="color: black;">No.</th>
-									<th style="color: black;">Product Image</th>
-									<th style="color: black;">Item</th>
-									<th style="color: black;">Price</th>
-									<th style="color: black;">kg</th>
-									<th style="color: black;">Total</th>
-								</tr>
-							</thead>
-							<tbody>
-
-								{{#each products}}
-								<tr class="text-center">
-									<td class="product-number">{{@index}}</td>
-									<td class="image-prod">
-										<a href="/view-product?id={{this._id}}">
-											<img class="img-fluid" src="/uploads/{{images.[0]}}" alt="img" width="50px"
-												height="50px">
-										</a>
-									</td>
-									<td class="item">
-										<p>{{this.item}}</p>
-									</td>
-									<td class="price">{{this.price}}</td>
-									<td class="quantity">
-
-
-										<div class="input-group">
-											<div class="input-group-prepend">
-												<button class="btn btn-outline-secondary" id="decrementBtn"
-													onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.kg}})">-</button>
-											</div>
-											<input type="text" class="form-control text-center"
-												id="quantityInput_{{this._id}}" value="{{this.kg}}" min="1"
-												readonly>
-											<div class="input-group-append">
-												<button class="btn btn-outline-secondary" id="incrementBtn"
-													onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.kg}})">+</button>
-											</div>
-										</div>
-									</td>
-									<td class="total">{{total}}</td>
-								</tr>
-								{{/each}}
-							</tbody>
-						</table>
-					</div>
-					<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
-						<div class="cart-total mb-3">
-							<h3>Cart Totals</h3>
-							<p class="d-flex">
-								<span>Subtotal</span>
-								<span>₹0.00</span>
-							</p>
-							<p class="d-flex">
-								<span>kg</span>
-								<span>{{kg}}</span>
-							</p>
-							<p class="d-flex">
-								<span>Price</span>
-								<span>₹0.00</span>
-							</p>
-							<hr>
-							<p class="d-flex total-price">
-								<span>Grand Total</span>
-								<span>₹{{total}}</span>
-							</p>
-						</div>
-						<p>
-							<a href="checkout.html" class="btn btn-success py-3 px-4">Proceed to Checkout</a>
-						</p>
-					</div>
-				</div>
-			</div>
-	</section>
-
-
-
-
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script>
-		function changeQuantity(proId, count, userId, quantity) {
-
-
-			$.ajax({
-				url: "/change-product-quantity",
-				method: "post",
-				data: {
-					productId: proId,
-					count: count,
-					userId: userId,
-					kg: kg,
-				},
-				success: (response) => {
-					console.log(response)
-					if (response.deleteProduct) {
-						location.reload(); // Reload the page
-					} else {
-						console.log(response, 'ajax response')
-						const quantityInput = document.getElementById(`quantityInput_${proId}`);
-						quantityInput.value = response.quantity;
-
-
-						const productTotal = document.querySelector(`#productTotal_${proId}`);
-						productTotal.textContent = response.productTotal;
-
-						const subtotal = document.getElementById(`summary`);
-						subtotal.textContent = response.subtotal;
-
-						const summarySubtotal = document.getElementById(`summary-subtotal`);
-						summarySubtotal.textContent = response.subtotal
-
-					}
-
-
-				}
-
-
-			})
-		}
-	</script>
-
-
-
-
-
-	</script>
-	{{else}}
-	<h1>
-		Cart Empty
-	</h1>
-	{{/if}}
-
-
-
-
-	<script>
-		function decreaseQuantity(i, size, color, stock) {
-
-			var quantityElement = $('#quantity-' + i);
-			var kg = parseInt(kgElement.text());
-
-			// Decrease the kg by 1
-			if (kg > 1) {
-				kg -= 1;
-				quantityElement.text(kg);
-				if (kg <= stock) {
-
-					$('#message-' + i).text('');
-				}
-				// Send AJAX request to update the kg on the server
-				updateQuantity(kg, i, size, color);
-			}
-		}
-
-		function increaseQuantity(i, size, color, stock) {
-			var quantityElement = $('#quantity-' + i);
-			var kg = parseInt(quantityElement.text());
-			// if(quantity<=stock){
-			kg += 1;
-			quantityElement.text(kg);
-			if (kg < stock) {
-
-				updateQuantity(quantity, i, size, color);
-			}
-			// }
-			// Increase the quantity by 1
-
-			if (kg > stock) {
-				// Show message below the buttons
-				$('#message-' + i).text('Exceeded the stock limit');
-				return; // Exit the function
-			}
-			// Send AJAX request to update the quantity on the server
-		}
-
-
-
-		function updateQuantity(kg, i, size, color) {
-			// console.log('hai: ', quantity, i)
-			var size = size
-			var color = color
-
-			$.ajax({
-				url: '/updateitem', // Replace with your actual URL
-				method: 'POST', // or 'GET' depending on your server configuration
-
-				data: {
-					quantity: quantity,
-					productId: i,
-					size: size,
-					color: color
-				},
-				success: function (response) {
-					// window.location.reload()
-					const kg = $('#displayQuantity')
-					kg.text(response.displayQuantity)
-
-					// Handle success response
-					console.log('Quantity updated successfully');
-
-				},
-				error: function (xhr, status, error) {
-					// Handle error response
-					console.error('Failed to update quantity');
-				}
-
-			});
-		}
-	</script>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+          <div class="cart-total mb-3">
+            <h3>Cart Totals</h3>
+            <p class="d-flex">
+              <span>Subtotal</span>
+              <span id="subtotal">₹{{total}}</span>
+            </p>
+            <p class="d-flex">
+              <span>Delivery Charge</span>
+              <span>Free</span>
+            </p>
+            <hr>
+            <p class="d-flex total-price">
+              <span>Grand Total</span>
+              <span id="grandTotal">₹{{total}}</span>
+            </p>
+          </div>
+          <p>
+            <a href="/checkout" class="btn btn-success py-3 px-4">Proceed to Checkout</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{else}}
+<div class="cart-empty" style="justify-content: center; display: grid;">
+  <h1 style="text-align: center;">CART IS EMPTY</h1>
+  <h3 style="text-align: center;">ADD ITEMS TO CART</h3>
+  <div class="continue__btn" style="justify-self: center;">
+    <a href="/home">Continue Shopping</a>
+  </div>
+</div>
+{{/if}}
 
 
 
@@ -363,6 +338,96 @@
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
 	<script src="/js/google-map.js"></script>
 	<script src="/js/main.js"></script>
+
+
+	<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+<script>
+  // Function to update the cart quantity in local storage
+  function updateCartQuantity(quantity) {
+    const cartNumber = $('#cartNumber');
+    cartNumber.text(quantity);
+    localStorage.setItem('cartQuantity', quantity);
+  }
+
+  function changeQuantity(proId, count, userId, kg) {
+    $.ajax({
+      url: "/change-product-quantity",
+      method: "post",
+      data: {
+        productId: proId,
+        count: count,
+        userId: userId,
+        kg: kg,
+      },
+      success: (response) => {
+        console.log(response);
+        if (response.deleteProduct) {
+          location.reload(); // Reload the page
+        } else {
+          const kgInput = $('#kgInput_' + proId);
+          kgInput.val(response.kg);
+
+          const productTotal = $('#productTotal_' + proId);
+          productTotal.find('.productTotal').text(response.total);
+
+          const subtotal = $('#subtotal');
+          subtotal.text(response.subtotal);
+
+          const grandTotal = $('#grandTotal');
+          grandTotal.text(response.total);
+
+          const cartNumber = response.cartNumber;
+          updateCartQuantity(cartNumber); // Update the cart number
+
+          // Store the cart quantity in local storage
+          localStorage.setItem('cartQuantity', cartNumber);
+        }
+      }
+    });
+  }
+
+  // Retrieve the cart quantity from local storage and update the cart number
+  $(document).ready(() => {
+    const cartNumber = $('#cartNumber');
+    const cartQuantity = localStorage.getItem('cartQuantity');
+    cartNumber.text(cartQuantity || '0');
+  });
+
+
+
+   function deleteproduct() {
+
+    const proId = $('#confirmDeleteBtn').data('product-id');
+    const userId = $('#confirmDeleteBtn').data('user-id');
+
+    $.ajax({
+      url: "/delete-product-from-cart",
+      method: "post",
+      data: {
+        productId: proId,
+        userId: userId,
+      },
+      success: (response) => {
+        if (response.deleteProductFromCart) {
+        
+          location.reload();
+        }
+      }
+    });
+  }
+
+  $('#confirmDeleteBtn').click(deleteproduct); 
+</script>
+
+
+
+
+
+
+  
 
 </body>
 

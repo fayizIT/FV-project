@@ -5,6 +5,8 @@ const nodemailer = require("nodemailer");
 const config = require("../config/config");
 const randomstring = require("randomstring");
 const Cart=require("../models/cartModel")
+const mongoose = require('mongoose');
+const Addresses = require("../models/addressesModel");
 const twilio = require("twilio");
 const categoryModel = require('../models/categoryModel');
 const accountSid = "AC33898e9e5916409727aac0861a79477e";
@@ -585,12 +587,11 @@ const getCart = async (req, res) =>{
           Number(product.kg) * Number(product.productId.price);
         return {
           _id: product.productId._id.toString(),
-          productname: product.productId.productname,
            item: product.productId.item,
           images: product.productId.images,
           price: product.productId.price,
           description: product.productId.description,
-          kg: product.kg,
+          kg: product.productId.kg,
           total,
           user_id: req.session.user_id,
         };
@@ -609,7 +610,7 @@ const getCart = async (req, res) =>{
       const totalCount = products.length;
       console.log(totalCount);
       res.render("users/cart", {
-        // layout: "user-layout",
+        
         products,
         total,
         totalCount,
@@ -629,65 +630,334 @@ const getCart = async (req, res) =>{
 
 
 const changeQuantity = async (req, res) => {
-    
   try {
+    const userId = new mongoose.Types.ObjectId(req.body.userId);
+    const productId = new mongoose.Types.ObjectId(req.body.productId);
+    const kg = req.body.kg;
+    const count = req.body.count;
 
-       const userId = new mongoose.Types.ObjectId(req.body.userId);
-      const productId = new mongoose.Types.ObjectId(req.body.productId);
-      const quantity = req.body.quantity;
+    const cart = await Cart.findOneAndUpdate(
+      { user_id: userId, 'products.productId': productId },
+      { $inc: { 'products.$.kg': count } },
+      { new: true }
+    ).populate('products.productId');
 
-      console.log("Hello there",userId,productId,quantity);
+    if (!cart || !cart.products) {
+      throw new Error('Cart not found');
+    }
 
-      const cartFind = await Cart.findOne({user_id: userId});
-      const cartId = cartFind._id;
-      const count = req.body.count;
-      console.log(userId, "userId");
-      console.log(productId, 'productid');
-      console.log(quantity, 'quantity');
-      console.log(cartId, 'cartId');
-      console.log(count, 'count');
+    const updatedProduct = cart.products.find(product => product.productId.equals(productId));
+    if (!updatedProduct) {
+      throw new Error('Product not found in cart');
+    }
 
-      // Find the cart for the given user and product
-      const cart = await Cart.findOneAndUpdate(
-          { user_id: userId, 'products.productId': productId },
-          { $inc: { 'products.$.quantity': count } },
-          { new: true }
-      ).populate('products.productId');
+    updatedProduct.total = updatedProduct.productId.price * updatedProduct.kg;
 
-      // Update the total for the specific product in the cart
-      const updatedProduct = cart.products.find(product => product.productId._id.equals(productId));
-      updatedProduct.total = updatedProduct.productId.price * updatedProduct.quantity;
+    if (updatedProduct.kg <= 0) {
+      cart.products = cart.products.filter(product => !product.productId.equals(productId));
       await cart.save();
-
-      // Check if the quantity is 0 or less
-      if (updatedProduct.quantity <= 0) {
-          // Remove the product from the cart
-          cart.products = cart.products.filter(product => !product.productId._id.equals(productId));
-          await cart.save();
-          const response = { deleteProduct: true };
-          console.log(response);
-          return res.json(response);
-      }
-
-      // Calculate the new subtotal for all products in the cart
-      const subtotal = cart.products.reduce((acc, product) => {
-          return acc + product.total;
-      }, 0);
-
-      // Prepare the response object
-      const response = {
-          quantity: updatedProduct.quantity,
-          subtotal: subtotal
-      };
-
-      console.log(response);
+      const response = { deleteProduct: true };
       return res.json(response);
+    }
+
+    await cart.save();
+
+    const subtotal = cart.products.reduce((acc, product) => {
+      return acc + product.total;
+    }, 0);
+
+    const response = {
+      kg: updatedProduct.kg,
+      subtotal: subtotal
+    };
+
+    return res.json(response);
   } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
+// const checkoutLoad = async(req,res)=>{
+//   try {
+//     console.log("entered checkout load");
+//     const userId = req.session.user_id;
+
+//     const defaultAddress = await Addresses.findOne(
+//       {
+//         user_id: userId,
+//         "addresses.is_default": true,
+//       },
+//       { "addresses.$": 1 }
+//     ).lean();
+//     console.log(defaultAddress, "eeeeeeeeeeeeeeeeeeeeee");
+//     const addressDoc = await Addresses.findOne({ user_id: userId }).lean();
+//     const addressArray = addressDoc.addresses;
+//     console.log(addressArray, "arrayyyy");
+//     const filteredAddresses = addressArray.filter(
+//       (address) => !address.is_default
+//     );
+//     console.log(filteredAddresses, "filtered address");
+
+//     const cart = await Cart.findOne({ User_id: userId })
+//       .populate({
+//         path: "products.productId",
+//       })
+//       .lean()
+//       .exec();
+
+//     const products = cart.products.map((product) => {
+//       const total =
+//         Number(product.quantity) * Number(product.productId.price);
+//       return {
+//         _id: product.productId._id.toString(),
+//         brand: product.productId.brand,
+//         productname: product.productId.productname,
+//         category: product.productId.category,
+//         images: product.productId.images,
+//         price: product.productId.price,
+//         description: product.productId.description,
+//         quantity: product.quantity,
+//         total,
+//         user_id: req.session.user_id,
+//       };
+//     });
+//     console.log(products, "products.........................");
+//     const total = products.reduce(
+//       (sum, product) => sum + Number(product.total),
+//       0
+//     );
+//     const finalAmount = total;
+//     const count = products.length;
+//     res.render("users/checkout", {
+//       defaultAddress: defaultAddress.addresses[0],
+//       filteredAddresses: filteredAddresses,
+//       products,
+//       total,
+//       count,
+//       subtotal: total,
+//       finalAmount,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+
+
+const checkoutLoad = async(req,res)=>{
+  try {
+    res.render("users/checkout")
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+
+
+
+
+
+// const loadAddress = async (req, res) => {
+//   try {
+    // console.log("address loadingggggggggggggg");
+    // const userId = req.session.user_id;
+    // // console.log(userId, "kkkkkkkkkkkkkkkkkkkkk");
+    // const userAddress = await Addresses.findOne({ user_id: userId })
+    //   .lean()
+    //   .exec();
+    // console.log(userAddress, "userAddressss");
+    // if (userAddress) {
+    //   if (userAddress.addresses.length === 1) {
+    //     userAddress.addresses[0].is_default = true;
+    //   }
+
+    //   const addressDetails = userAddress.addresses.map((address) => {
+    //     return {
+    //       name: address.name,
+    //       mobile: address.mobile,
+    //       address: address.address,
+    //       city: address.city,
+    //       state: address.state,
+    //       pincode: address.pincode,
+    //       _id: address._id,
+    //       is_default: address.is_default,
+    //     };
+    //   });
+
+//       console.log(addressDetails, "addressdetails");
+//       res.render("users/address"); // Provide the template name and data object as arguments
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+
+const loadAddress = async (req, res) => {
+  try {
+    res.render("users/address")
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+
+
+
+
+
+
+
+// const addressList = async (req, res) => {
+//   try {
+//     const userId = req.session.user_id;
+//     const name = req.body.name;
+//     const mobile = req.body.mobile;
+//     const city = req.body.city;
+//     const state = req.body.state;
+//     const pincode = req.body.pincode;
+//     const address = req.body.address;
+//     console.log(name);
+
+//     console.log(city);
+//     console.log(state);
+//     console.log(pincode);
+//     const newAddress = {
+//       name: name,
+//       mobile: mobile,
+//       address: address,
+//       city: city,
+//       state: state,
+//       pincode: pincode,
+//       is_default: false,
+//     };
+
+//     let userAddress = await Addresses.findOne({ user_id: userId });
+//     // console.log(userAddress, "useraddresssssss");
+//     if (!userAddress) {
+//       newAddress.is_default = true;
+//       userAddress = new Addresses({ user_id: userId, addresses: [newAddress] });
+//     } else {
+//       userAddress.addresses.push(newAddress);
+//       if (userAddress.addresses.length === 1) {
+//         userAddress.addresses[0].is_default = true;
+//       }
+//     }
+
+//     await userAddress.save();
+//     console.log(userAddress, "useraddress");
+
+//     res.redirect("/address");
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+// const deletingAddress = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     const userId = req.session.user_id;
+
+//     const address = await Addresses.findOne({ user_id: userId });
+
+//     const deletedAddress = address.addresses.find(
+//       (addr) => addr._id.toString() === id
+//     );
+//     console.log(deletedAddress, "deletedAddress");
+//     const isDefaultAddress = deletedAddress && deletedAddress.is_default;
+//     console.log(isDefaultAddress, "isDefaultAddress");
+
+//     address.addresses = address.addresses.filter(
+//       (addr) => addr._id.toString() !== id
+//     );
+
+//     if (isDefaultAddress && address.addresses.length > 0) {
+//       const newDefaultAddress = address.addresses.find(
+//         (addr) => addr._id.toString() !== id
+//       );
+//       if (newDefaultAddress) {
+//         newDefaultAddress.is_default = true;
+//       }
+//       console.log(newDefaultAddress, "newDefaultAddress");
+//     }
+
+//     // Save the updated address
+//     await address.save();
+//     res.redirect("/address");
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+// const editAddress = async (req, res) => {
+//   try {
+//     console.log("edit address entering");
+//     const userId = req.session.user_id;
+//     const id = req.body._id;
+//     console.log(id, "kkkkkkkkkkkkkkkkkkkkkkk");
+//     const name = req.body.name;
+//     const mobile = req.body.mobile;
+//     const address = req.body.address;
+//     const city = req.body.city;
+//     const state = req.body.state;
+//     const pincode = req.body.pincode;
+
+//     const updatedAddress = await Addresses.findOneAndUpdate(
+//       { user_id: userId, "addresses._id": id },
+//       {
+//         $set: {
+//           "addresses.$.name": name,
+//           "addresses.$.mobile": mobile,
+//           "addresses.$.address": address,
+//           "addresses.$.city": city,
+//           "addresses.$.state": state,
+//           "addresses.$.pincode": pincode,
+//         },
+//       },
+//       { new: true }
+//     );
+//     console.log(updatedAddress, "updatedAddresssssss");
+//     if (updatedAddress) {
+//       console.log("Address updated successfully:", updatedAddress);
+//       res.redirect("/address");
+//     } else {
+//       console.log("Address not found or not updated");
+//       res.redirect("/address");
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+// const settingAsDefault = async (req, res) => {
+//   try {
+//     const addressId = req.body.addressId;
+//     const userId = req.session.user_id;
+//     console.log(addressId, "addressIdkkkk");
+//     // Find the current default address and unset its "isDefault" flag
+//     const old = await Addresses.findOneAndUpdate(
+//       { user_id: userId, "addresses.is_default": true },
+//       { $set: { "addresses.$.is_default": false } }
+//     );
+//     console.log(old, "oldddddddddd");
+//     // Set the selected addresses as the new default addresses
+//     const defaultAddress = await Addresses.findOneAndUpdate(
+//       { user_id: userId, "addresses._id": addressId },
+//       { $set: { "addresses.$.is_default": true } }
+//     );
+//     console.log(defaultAddress, "uuuuuuuuuuuuuuuuuuuuu");
+//     const response = {
+//       setDefault: true,
+//     };
+
+//     res.json({ status: true });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Failed to set addresses as default" });
+//   }
+// };
 
 
 
@@ -722,7 +992,14 @@ module.exports = {
   viewPage,
   addToCart,
   getCart,
-  changeQuantity
+  changeQuantity,
+  checkoutLoad,
+  loadAddress,
+  // editAddress,
+  // deletingAddress,
+  // settingAsDefault,
+  // addressList,
+ 
   
     
 };
