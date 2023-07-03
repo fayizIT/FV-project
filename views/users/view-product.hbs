@@ -152,6 +152,7 @@
 
 <div class="container">
   <div class="row">
+    
     <div class="col-md-6">
       <div class="main-product-image">
         <img class="img-fluid" src="/uploads/{{singleProduct.images.[0]}}" alt="img">
@@ -183,7 +184,7 @@
       <div class="button-container">
         <button
           style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-right: 10px;"
-          onclick='addToCart("{{this._id}}", event); showSweetAlert();'>
+          onclick='addToCart("{{singleProduct._id}}", event); showSweetAlert();'>
           Add to Cart
         </button>
         {{!-- <button style="background-color: #008CBA; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-right: 10px;">

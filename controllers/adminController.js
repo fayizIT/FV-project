@@ -28,13 +28,17 @@ const loginVerify = async (req, res) => {
       const passMatch = await bcrypt.compare(password, userData.password);
       console.log(passMatch);
       if (passMatch) {
-        if (userData.is_admin === 0) {
-          res.render("admin/login", { layouts: "admin-layout" });
+        if (userData.is_admin === 1) {
+          req.session.user_id = userData._id;
+          console.log(req.session.user_id);
+          res.redirect("admin/home");
         } else {
           req.session.user_id = userData._id;
           console.log(req.session.user_id);
           res.redirect("admin/home");
         }
+      } else {
+        res.render("admin/login", { layouts: "admin-layout", message: "You are not an admin" });
       }
     } else {
       res.render("admin/login", { layouts: "admin-layout" });
@@ -43,6 +47,8 @@ const loginVerify = async (req, res) => {
     console.log(error.message);
   }
 };
+
+
 
 const loadDash = async (req, res) => {
   try {
@@ -226,7 +232,7 @@ const adminlogout = async (req, res) => {
         }
       );
   
-      res.redirect("/admin/home");
+      res.redirect("/admin/users");
     } catch (error) {
       console.log(error.message);
     }
@@ -238,7 +244,7 @@ const adminlogout = async (req, res) => {
       console.log(id);
       const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: true } });
       // console.log(userData);
-      res.redirect(req.get('/admin/users'));
+      res.redirect("/admin/users");
     } catch (error) {
       console.log(message.error);
     }
@@ -250,7 +256,7 @@ const adminlogout = async (req, res) => {
       console.log(id);
       const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: false } });
       // console.log(userData);
-      res.redirect(req.get('/admin/users'));
+      res.redirect("/admin/users");
     } catch (error) {
       console.log(message.error);
     }

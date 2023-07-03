@@ -42,8 +42,8 @@
 <style>
 	body {
 		margin: 0;
-		color: #6a6f8c;
-		background: #c8c8c8;
+		color: #212529;
+		background: #fff;
 		font: 600 16px/18px 'Open Sans', sans-serif;
 	}
 
@@ -69,7 +69,7 @@
 
 	.continue-btn {
 		background-color: #1161ee;
-		color: #fff;
+		color: #ffffff;
 		padding: 10px 20px;
 		border-radius: 5px;
 		text-decoration: none;
@@ -82,7 +82,7 @@
 	.cart-empty {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: top;
     flex-direction: column;
     height: 100vh;
   }
@@ -296,7 +296,7 @@
   </div>
 </section>
 {{else}}
-<div class="cart-empty" style="justify-content: center; display: grid;">
+<div class="cart-empty">
   <h1 style="text-align: center;">CART IS EMPTY</h1>
   <h3 style="text-align: center;">ADD ITEMS TO CART</h3>
   <div class="continue__btn" style="justify-self: center;">
