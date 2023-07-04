@@ -1031,6 +1031,23 @@ const checkoutLoad = async (req, res) => {
   }
 }
 
+
+
+const orderFailed = async (req, res) => {
+  try {
+      res.render('users/orderFailed')
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+
+
+
+
+
+
+
 const submitCheckout = async (req, res) => {
   try {
     console.log("entered checkout page");
@@ -1125,6 +1142,82 @@ const loadOrders = async (req, res) => {
 
 
 
+const loadingOrdersViews = async (req, res) => {
+  try {
+      const orderId = req.query.id;
+
+      const userId = req.session.user_id
+
+      console.log(orderId, 'orderId when loading page');
+      const order = await Order.findOne({ _id: orderId })
+          .populate({
+              path: 'products.productId',
+              select: 'name price image',
+          })
+
+
+      const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
+      order.date = createdOnIST;
+
+      const orderDetails = order.products.map(product => {
+          const images = product.productId.image || []; // Set images to an empty array if it is undefined
+          const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
+
+          return {
+              name: product.productId.name,
+              image: image,
+              price: product.productId.price,
+              total: product.total,
+              quantity: product.quantity,
+              status: order.orderStatus,
+
+          };
+      });
+
+
+
+      const deliveryAddress = {
+          name: order.addressDetails.name,
+          homeAddress: order.addressDetails.homeAddress,
+          city: order.addressDetails.city,
+          street: order.addressDetails.street,
+          postalCode: order.addressDetails.postalCode,
+      };
+
+      const subtotal = order.orderValue;
+      const cancellationStatus = order.cancellationStatus
+      console.log(cancellationStatus, 'cancellationStatus');
+
+      console.log(subtotal, 'subtotal');
+
+
+      console.log(orderDetails, 'orderDetails');
+      console.log(deliveryAddress, 'deliveryAddress');
+
+      res.render('users/viewOrder', {
+          orderDetails: orderDetails,
+          deliveryAddress: deliveryAddress,
+          subtotal: subtotal,
+
+          orderId: orderId,
+          orderDate: createdOnIST,
+          cancellationStatus: cancellationStatus,
+
+      });
+  } catch (error) {
+      throw new Error(error);
+  }
+}
+
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   insertUser,
@@ -1162,8 +1255,11 @@ module.exports = {
   changeAddress,
 
   checkoutLoad,
+  orderFailed,
   submitCheckout,
-  loadOrders
+  loadOrders,
+  loadingOrdersViews
+
   
 
  

@@ -70,12 +70,21 @@ router.post('/change-product-quantity',userController.changeQuantity);
 
 router.get("/checkout", auth.isLogin, userController.checkoutLoad);
 
+
+router.get('/orderFailed',auth.isLogin,userController.orderFailed)
+
+
+
+
 router.post("/submit-checkout",auth.isLogin, userController.submitCheckout);
 router.get("/my-orders", auth.isLogin, userController.loadOrders);
+router.get('/viewOrder',auth.isLogin,userController.loadingOrdersViews)
 
 
 
-// router.post("/address", userController.addressList);
+
+
+
 
 
 

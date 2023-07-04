@@ -86,7 +86,7 @@
 							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{user.name}}</a>
 						<div class="dropdown-menu" aria-labelledby="userDropdown">
 							<a class="dropdown-item" href="profile">Profile</a>
-							<a class="dropdown-item" href="/settings">Settings</a>
+							<a class="dropdown-item" href="/settings">Your Orders</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="/logout">Logout</a>
 						</div>
@@ -193,38 +193,20 @@
 							</div>
 							<div class="cart-detail p-3 p-md-4" style="color: black;">
 								<h3 class="billing-heading mb-4">Payment Method</h3>
-								<div class="form-group">
-									<div class="col-md-12">
-										<div class="radio">
-											<label><input type="radio" name="optradio" class="mr-2">Direct Bank
-												Tranfer</label>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-md-12">
-										<div class="radio">
-											<label><input type="radio" name="optradio" class="mr-2">Check
-												Payment</label>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-md-12">
-										<div class="radio">
-											<label><input type="radio" name="optradio" class="mr-2">Paypal</label>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-md-12">
-										<div class="checkbox">
-											<label><input type="checkbox" value="" class="mr-2">I have read and accept
-												the terms and conditions</label>
-										</div>
-									</div>
-								</div>
-								<button class="btn btn-success btn-lg btn-block btn-checkout" type="submit">Place an
+								<div class="d-block my-3">
+                            <div class="custom-control custom-radio">
+                                <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
+                                    checked="" required="" value="COD">
+                                <label class="custom-control-label" for="credit">COD</label>
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
+                                    required="" value="ONLINE">
+                                <label class="custom-control-label" for="debit">ONLINE</label>
+                            </div>
+
+                        </div>
+								<button class="btn btn-primary btn-lg btn-block btn-checkout" id="checkout-button" type="submit">Place an
 									Order</button>
 
 									{{!-- <div class="col-md-12">
@@ -367,24 +349,6 @@
 	</footer>
 
 
-	<script>
-    function validateForm(event) {
-        event.preventDefault(); // Prevent form submission if validation fails
-
-        const termsCheckbox = document.getElementById('termsCheckbox');
-        const termsFeedback = document.getElementById('termsFeedback');
-
-        if (!termsCheckbox.checked) {
-            termsFeedback.style.display = 'block';
-            return;
-        }
-
-        // Additional validation logic for radio inputs if needed
-
-        // If all validations pass, submit the form
-        document.querySelector('form').submit();
-    }
-</script>
 
 
 
@@ -452,6 +416,37 @@
 
 		});
 	</script>
+
+
+
+<script>
+
+	function verifyPayment(razorpayServerPaymentResponse, serverOrderDetails) {
+            $.ajax({
+                url: '/verify-payment',
+                data: {
+
+                    razorpayServerPaymentResponse,
+
+                    serverOrderDetails
+
+                },
+                method: 'POST',
+
+                success: (response) => {
+                    if (response.status) {
+                        location.href = '/orderPlaced'
+                    } else {
+                        location.href = '/orderFailed'
+                    }
+                }
+            })
+        }
+
+</script>
+
+	
+</script>
 
 </body>
 
