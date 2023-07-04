@@ -913,7 +913,7 @@ const changeAddress = async (req, res) => {
     );
     console.log(filteredAddresses, "filteredaddresss of change ");
 
-    const cart = await Cart.findOne({ User_id: userId })
+    const cart = await Cart.findOne({ user_id: userId })
       .populate({
         path: "products.productId",
       })
@@ -1093,7 +1093,7 @@ const submitCheckout = async (req, res) => {
     });
     const savedOrder = await newOrder.save();
     console.log(savedOrder, "saved to data base");
-    await Cart.findOneAndDelete({ User_id: userId });
+    await Cart.findOneAndDelete({ user_id: userId });
     res.render("users/order-sucessfull", {
       savedOrder,
     });

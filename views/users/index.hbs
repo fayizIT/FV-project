@@ -130,10 +130,11 @@
 
 <section class="ftco-section">
     <div class="container">
+     
         <div class="row justify-content-center mb-3 pb-3">
             <div class="col-md-12 heading-section text-center ftco-animate">
                 <span class="subheading">Our Featured Products</span>
-                <h2 class="mb-4">Fresh and Delicious Vegetable & Fruit Products</h2>
+                <h2 class="mb-4">Fresh and Delicious Fruit Products</h2>
                 <p></p>
             </div>
         </div>
@@ -142,8 +143,11 @@
    
 
     <div class="container">
+      
         <div class="row">
+          
             {{#each Product}}
+            {{#if (eq this.category 'FRUITS')}}
             
 
             <div class="col-md-6 col-lg-3 ftco-animate">
@@ -173,10 +177,83 @@
                     </div>
                 </div>
             </div>
+            {{/if}}
             {{/each}}
         </div>
     </div>
 </section>
+
+
+
+
+
+<section id="home-section" class="hero">
+		  
+
+   
+
+<section class="ftco-section">
+    <div class="container">
+      
+        <div class="row justify-content-center mb-3 pb-3">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <span class="subheading">Our Featured Products</span>
+                <h2 class="mb-4">Fresh and Delicious Vegetable Products</h2>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <div class="container">
+      
+        <div class="row">
+          
+            {{#each Product}}
+            {{#if (eq this.category 'VEGITABLE')}}
+            
+
+            <div class="col-md-6 col-lg-3 ftco-animate">
+                <div class="product">
+                    <a href="/view-product?id={{this._id}}">
+                        <img class="img-fluid" src="/uploads/{{images.[0]}}" alt="img" style="width: 100%; height: 200px;">
+                        <div class="overlay"></div>
+                    </a>
+                    <div class="text py-3 pb-4 px-3 text-center">
+                        <h3><a href="#">{{this.item}}</a></h3>
+                        <div class="d-flex">
+                            <div class="pricing">
+                                <p class="price"><span>₹{{this.price}}/kg</span></p>
+                            </div>
+                        </div>
+                        <div class="bottom-area d-flex px-3">
+                          <div class="m-auto d-flex">
+                            <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                              <span><i class="ion-ios-cart" onclick='addToCart("{{this._id}}", event); showSweetAlert();'></i></span>
+                            </a>
+                            <a href="#" class="heart d-flex justify-content-center align-items-center">
+                              <span><i class="ion-ios-heart" ></i></span>
+                            </a>
+                          </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+    </div>
+</section>
+</section>
+
+
+
+
+
+
+
 
 
 		

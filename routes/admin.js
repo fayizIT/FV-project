@@ -51,6 +51,9 @@ router.get("/unlist-category",adminAuth.isLogin,adminController.unlistCategory);
 router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 
 
+router.get('/orders',adminAuth.isLogin,adminController.getUserOrders)
+
+
 router.get("*", (req, res) => { res.redirect("/admin");});
 
 // router.get("/table", adminController.tableData);

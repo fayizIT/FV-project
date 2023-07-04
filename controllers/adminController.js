@@ -3,7 +3,9 @@ const Product = require("../models/productModel");
 const bcrypt = require("bcrypt");
 const { userLogout } = require("./userController");
 const Category = require("../models/categoryModel");
+const Order = require("../models/orderModel");
 const { log } = require("handlebars/runtime");
+const moment = require("moment-timezone");
 const multer = require("multer");
 
 
@@ -368,6 +370,29 @@ const listCategory = async (req, res) => {
 };
 
 
+const getUserOrders = async (req, res) => {
+  try {
+    console.log('entered into getUSERORDERS'); 
+    const orderData = await Order.find().populate("userId").lean();
+    console.log(orderData, "order data coming");
+    const orderHistory = orderData.map((history) => {
+      let createdOnIST = moment(history.date)
+        .tz("Asia/Kolkata")
+        .format("DD-MM-YYYY h:mm A");
+
+      return { ...history, date: createdOnIST, username: history.userId.name };
+    });
+    console.log(orderHistory, "order serial numbers");
+    res.render("admin/userOrder", {
+      
+      orderData: orderHistory,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
 
 
 
@@ -392,5 +417,6 @@ module.exports = {
   unlistProducts,
   listProducts,
   unlistCategory,
-  listCategory
+  listCategory,
+  getUserOrders
 };

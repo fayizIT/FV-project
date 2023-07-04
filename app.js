@@ -3,12 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
 const session = require('express-session');
 const hbs = require('hbs');
-const Handlebars = require('handlebars')
-
-
+const handlebarsHelpers = require("handlebars-helpers")();
 
 const mongoose = require("mongoose");
 mongoose.connect('mongodb://127.0.0.1:27017/fresh_hub');
@@ -23,6 +20,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.engine('hbs', hbs.__express);
+hbs.registerHelper(handlebarsHelpers);
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -37,15 +35,10 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
-
-
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.use('/admin/', adminRouter);
 app.use('/', userRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
