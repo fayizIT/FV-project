@@ -10,7 +10,7 @@ const Addresses = require("../models/addressesModel");
 var Address = require("../models/addressesModel");
 const Order = require("../models/orderModel");
 const moment = require("moment-timezone");
-
+const ObjectId = mongoose.Types.ObjectId;
 
 
 const twilio = require("twilio");
@@ -644,7 +644,10 @@ const changeQuantity = async (req, res) => {
       throw new Error('Product not found in cart');
     }
 
+    let productTotal=0
     updatedProduct.total = updatedProduct.productId.price * updatedProduct.kg;
+    productTotal=updatedProduct.total;
+
 
     if (updatedProduct.kg <= 0) {
       cart.products = cart.products.filter(product => !product.productId.equals(productId));
@@ -661,7 +664,8 @@ const changeQuantity = async (req, res) => {
 
     const response = {
       kg: updatedProduct.kg,
-      subtotal: subtotal
+      subtotal: subtotal,
+      productTotal
     };
 
     return res.json(response);
@@ -1030,7 +1034,7 @@ const submitCheckout = async (req, res) => {
     const paymentMethod = req.body.paymentMethod;
 
     console.log(paymentMethod, "paymentmethod");
-    const status = paymentMethod === "COD" ? "PENDING" : "PAYED";
+    const status = paymentMethod === "COD" ? "pending" : "Paid";
 
     console.log(status, "the status of payment");
 
@@ -1109,73 +1113,164 @@ const loadOrders = async (req, res) => {
 
 
 
-const loadingOrdersViews = async (req, res) => {
+// const loadOrdersView = async (req, res) => {
+//   try {
+//       const orderId = req.query.id;
+      
+//       const userId = req.session.user_id
+
+//       console.log(orderId, 'orderId when loading page');
+//       const order = await Order.findOne({ _id: orderId })
+//           .populate({
+//               path: 'products.productId',
+//               select: 'productname price images',
+//           })
+
+
+
+//       const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
+//       order.date = createdOnIST;
+
+//       const orderDetails = order.products.map(product => {
+//           const images = product.productId.images || []; // Set images to an empty array if it is undefined
+//           const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
+
+//           return {
+//               productname: product.productId.productname,
+//               image: images,
+//               price: product.productId.price,
+
+//               total: product.total,
+//               kg: product.kg,
+//               status : order.orderStatus,
+
+             
+//           };
+//       });
+      
+
+//       const deliveryAddress = {
+
+//         name: order.addressDetails.name,
+//         address: order.addressDetails.address,
+//         city: order.addressDetails.city,
+//         state: order.addressDetails.state,
+//         pincode: order.addressDetails.pincode,
+//     };
+
+//     const subtotal = order.orderValue;
+//     const cancellationStatus = order.cancellationStatus
+//     console.log(cancellationStatus,'cancellationStatus');
+   
+//     console.log(subtotal, 'subtotal');
+    
+
+//     console.log(orderDetails, 'orderDetails');
+//     console.log(deliveryAddress, 'deliveryAddress');
+
+//     res.render('users/viewOrder', {
+//         orderDetails: orderDetails,
+//         deliveryAddress: deliveryAddress,
+//         subtotal: subtotal,
+       
+//         orderId: orderId,
+//         orderDate: createdOnIST,
+//         cancellationStatus:cancellationStatus,
+       
+
+//     });
+// } catch (error) {
+//     throw new Error(error);
+// }
+// }
+
+const loadOrdersView = async (req, res) => {
   try {
       const orderId = req.query.id;
-
+      
       const userId = req.session.user_id
 
       console.log(orderId, 'orderId when loading page');
       const order = await Order.findOne({ _id: orderId })
           .populate({
               path: 'products.productId',
-              select: 'name price image',
+              select: 'item price images',
           })
+
 
 
       const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
       order.date = createdOnIST;
 
       const orderDetails = order.products.map(product => {
-          const images = product.productId.image || []; // Set images to an empty array if it is undefined
+          const images = product.productId.images || []; // Set images to an empty array if it is undefined
           const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
 
           return {
-              name: product.productId.name,
-              image: image,
+              item: product.productId.item,
+              image: images,
               price: product.productId.price,
-              total: product.total,
-              quantity: product.quantity,
-              status: order.orderStatus,
 
+              total: product.total,
+              kg: product.kg,
+              status : order.orderStatus,
+             
           };
       });
-
-
+      
 
       const deliveryAddress = {
-          name: order.addressDetails.name,
-          homeAddress: order.addressDetails.homeAddress,
-          city: order.addressDetails.city,
-          street: order.addressDetails.street,
-          postalCode: order.addressDetails.postalCode,
-      };
 
-      const subtotal = order.orderValue;
-      const cancellationStatus = order.cancellationStatus
-      console.log(cancellationStatus, 'cancellationStatus');
+        name: order.addressDetails.name,
+        address: order.addressDetails.address,
+        city: order.addressDetails.city,
+        state: order.addressDetails.state,
+        pincode: order.addressDetails.pincode,
+    };
 
-      console.log(subtotal, 'subtotal');
+    const subtotal = order.orderValue;
+    const cancellationStatus = order.cancellationStatus
+    console.log(cancellationStatus,'cancellationStatus');
+   
+    console.log(subtotal, 'subtotal');
+    
 
+    console.log(orderDetails, 'orderDetails');
+    console.log(deliveryAddress, 'deliveryAddress');
 
-      console.log(orderDetails, 'orderDetails');
-      console.log(deliveryAddress, 'deliveryAddress');
+    res.render('users/viewOrder', {
+        orderDetails: orderDetails,
+        deliveryAddress: deliveryAddress,
+        subtotal: subtotal,
+       
+        orderId: orderId,
+        orderDate: createdOnIST,
+        cancellationStatus:cancellationStatus,
+       
 
-      res.render('users/viewOrder', {
-          orderDetails: orderDetails,
-          deliveryAddress: deliveryAddress,
-          subtotal: subtotal,
-
-          orderId: orderId,
-          orderDate: createdOnIST,
-          cancellationStatus: cancellationStatus,
-
-      });
-  } catch (error) {
-      throw new Error(error);
-  }
+    });
+} catch (error) {
+    throw new Error(error);
+}
 }
 
+
+const cancelOrder = async (req, res) => {
+  try {
+    const id = req.body.orderId;
+    const url = '/viewOrder?id=' + id;
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { orderStatus: "Pending",  cancellationStatus: "cancellation requested" } },
+      { new: true }
+    ).exec();
+
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 
 
@@ -1225,7 +1320,8 @@ module.exports = {
   orderFailed,
   submitCheckout,
   loadOrders,
-  loadingOrdersViews
+  loadOrdersView,
+  cancelOrder
 
   
 

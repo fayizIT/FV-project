@@ -54,10 +54,13 @@ router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 router.get('/orders',adminAuth.isLogin,adminController.getUserOrders)
 
 
-router.get('/addCoupon',adminController.Setcoupen)
+router.get('/addCoupon',adminAuth.isLogin,adminController.Setcoupen)
 router.post('/addCoupon',uploads.single('couponImage'),adminController.addCoupon)
 
-router.get('/viewcoupon',adminController.couponList)
+router.get('/viewcoupon',adminAuth.isLogin,adminController.couponList)
+
+router.get('/coupon-edit',adminAuth.isLogin, adminController.editCouponPage);
+router.post('/update-coupon',adminController.updateCoupon)
 
 
 

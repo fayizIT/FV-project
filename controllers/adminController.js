@@ -445,6 +445,86 @@ const couponList = async(req,res)=>{
 
 
 
+const editCouponPage = async (req, res) => {
+  try {
+      console.log("entered into edit coupon page.......");
+  //   const admin = req.session.is_admin;
+    const adminData = await User.find({ is_admin:1 });
+
+    let couponExistError = false;
+
+    if (req.session.couponExistError) {
+      couponExistError = req.session.couponExistError;
+    }
+
+    const couponId = req.query.id;
+    const couponData = await Coupon.findOne({ _id: new ObjectId(couponId) }).lean();
+    console.log("CouponId",couponId);
+     console.log("Coupondata.........",couponData);
+    const dataToRender = {
+     
+      adminData,
+      couponExistError,
+      couponData
+    };
+    console.log("REndered data",dataToRender);
+    res.render('admin/coupon-edit', dataToRender);
+
+    delete req.session.couponExistError;
+  } catch (error) {
+    console.log("Error from editCouponPOST couponController:", error);
+  }
+};
+
+
+
+const updateCoupon = async (req, res) => {
+  try {
+      console.log("Copuon is beeing updated");
+  //   const admin = req.session.is_admin;
+    const adminData = await User.find({ is_admin: 1 });
+
+    const couponDataForUpdate = req.body;
+    const couponId = couponDataForUpdate.couponId;
+
+    const couponExist = await Coupon.find({ couponCode: couponDataForUpdate.couponCode.toLowerCase() }).lean();
+     console.log("couponExit",couponExist);
+    if (couponExist.length === 0) {
+      const couponCode = couponDataForUpdate.couponCode.toLowerCase();
+      const activeCoupon = couponDataForUpdate.activeCoupon === "true" ? true : false;
+      const couponDescription = couponDataForUpdate.couponDescription;
+      const discountPercentage = couponDataForUpdate.discountPercentage;
+      const maxDiscountAmount = couponDataForUpdate.maxDiscountAmount;
+      const minOrderValue = couponDataForUpdate.minOrderValue;
+      const validFor = couponDataForUpdate.validFor;
+
+      const couponUpdation = await Coupon.updateOne({ _id: couponId }, {
+        $set: {
+          couponCode: couponCode,
+          couponDescription: couponDescription,
+          discountPercentage: discountPercentage,
+          maxDiscountAmount: maxDiscountAmount,
+          minOrderValue: minOrderValue,
+          validFor: validFor,
+          activeCoupon: activeCoupon
+        }
+      });
+      console.log("Couponupdation...............",couponUpdation);
+
+      res.redirect('/admin/manage-coupons');
+    } else {
+      req.session.couponExistError = "Coupon code already exists, try some other code";
+      res.redirect('/admin/edit-coupon/?id=' + couponId);
+    }
+  } catch (error) {
+    console.log("Error from updateCouponPOST couponController:", error);
+  }
+};
+
+
+
+
+
 
 
 
@@ -479,4 +559,6 @@ module.exports = {
   Setcoupen,
   addCoupon,
   couponList,
+  updateCoupon,
+  editCouponPage
 };

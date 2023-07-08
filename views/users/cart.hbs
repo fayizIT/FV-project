@@ -267,9 +267,15 @@
                       </div>
                     </div>
                   </td>
-                  <td class="total" id="productTotal_{{this._id}}">
+                  
+                  {{!-- <td class="total" id="productTotal_{{this._id}}">
                     <span id="productTotal">{{total}}</span>
+                  </td> --}}
+
+                  <td class="total" id="productTotal_{{this._id}}">
+                    <span class="productTotal">{{total}}</span>
                   </td>
+
 
                 </tr>
                 {{/each}}
@@ -353,6 +359,7 @@
   <script>
     // Function to update the cart quantity in local storage
     function updateCartQuantity(kg) {
+      const productTotal=document.getElementById("productTotal")
       const cartNumber = $('#cartNumber');
       cartNumber.text(kg);
       localStorage.setItem('cartQuantity', kg);
@@ -373,8 +380,12 @@
           if (response.deleteProduct) {
             location.reload(); // Reload the page
           } else {
+            console.log(response)
             const kgInput = $('#kgInput_' + proId);
             kgInput.val(response.kg);
+
+          const productTotalElement = $('#productTotal_' + proId).find('.productTotal');
+          productTotalElement.text(response.productTotal);
 
             const productTotal = $('#productTotal_' + proId);
             productTotal.find('.productTotal').text(response.total);
@@ -383,7 +394,7 @@
             subtotal.text(response.subtotal);
 
             const grandTotal = $('#grandTotal');
-            grandTotal.text(response.total);
+            grandTotal.text(response.subtotal);
 
             const cartNumber = response.cartNumber;
             updateCartQuantity(cartNumber); // Update the cart number

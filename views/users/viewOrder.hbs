@@ -270,18 +270,18 @@
 
 
                                 <div class="sq align-self-center">
-                                    <img class="img-fluid  my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0"
-                                        src="/uploads/{{Product.images.[0]}}" alt="{{image}}" width="135" height="135" />
+                                    <img src="/uploads/{{this.image.[0]}}" class="img-fluid" alt="Product Image" width="135" height="135" />
                                 </div>
                                 
                                 <div class="media-body my-auto text-right">
                                     <div class="row  my-auto flex-column flex-md-row">
                                         <div class="col my-auto">
-                                            <h6 class="mb-0">{{name}}</h6>
+                                            <h6 class="mb-0">{{item}}</h6>
                                         </div>
                                         <div class="col my-auto">
-                                            <small>Qty: {{quantity}}</small>
+                                            <small>KG: {{kg}}</small>
                                         </div>
+                                        
                                         <div class="col-auto my-auto">
                                             <small>Price:{{price}}</small>
                                         </div>
@@ -367,9 +367,9 @@
                         <h6>DELIVERY ADDRESS</h6>
                         <div class="delivery-address-details">
                             <p class="mb-0">{{deliveryAddress.name}}</p>
-                            <p class="mb-0">{{deliveryAddress.homeAddress}}</p>
+                            <p class="mb-0">{{deliveryAddress.address}}</p>
                             <p class="mb-0">{{deliveryAddress.city}}</p>
-                            <p class="mb-0">{{deliveryAddress.street}}</p>
+                            <p class="mb-0">{{deliveryAddress.state}}</p>
                             <p class="mb-0">{{deliveryAddress.pincode}}</p>
 
                         </div>

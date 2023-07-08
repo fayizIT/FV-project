@@ -1,78 +1,85 @@
-const mongoose = require("mongoose");
+
+const mongoose = require('mongoose')
+
 
 const ordersSchema = new mongoose.Schema({
-  userId: {
+  userId:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref:"User"
   },
-  date: {
-    type: Date,
-    require: true,
+  date:{
+    type:Date,
+    require:true
   },
-  orderValue: {
-    type: Number,
-    require: true,
+  orderValue:{
+    type:Number,
+    require:true
   },
-  paymentMethod: {
-    type: String,
-    require: true,
+  paymentMethod:{
+    type:String,
+    require:true
   },
-  orderStatus: {
-    type: String,
-    require: true,
+  orderStatus:{
+    type:String,
+    require:true
   },
   products: [
     {
       productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        ref:"Product"
       },
-      quantity: {
+      kg: {
         type: Number,
         required: true,
-        default: 1,
+        default: 1
       },
-      total: {
-        type: Number,
-        default: 0,
-      },
-    },
+      total:{
+        type:Number,
+        default:0
+      }
+    }
   ],
   addressDetails: {
-    name: {
-      type: String,
-      require: true,
-    },
-    mobile: {
-      type: String,
-      require: true,
-    },
-    homeAddress: {
-      type: String,
-      require: true,
-    },
-    city: {
-      type: String,
-      require: true,
-    },
-    street: {
-      type: String,
-      require: true,
-    },
-    postalCode: {
-      type: String,
-      require: true,
-    },
-  },
+    
+      name: {
+        type:String,
+        require:true
+      
+      },
+      mobile:{
+        type:String,
+        require:true
+      },
+      address:{
+        type:String,
+        require:true
+      },
+      city:{
+        type:String,
+        require:true
+      },
+      state:{
+        type:String,
+        require:true
+      },
+      pincode:{
+        type:String,
+        require:true
+      }
 
-  cancellationStatus: {
-    type: String,
-    default: "Not requested",
+},
+  
+  cancellationStatus:{
+    type:String,
+    default:"Not requested"
+    
   },
-  cancelledOrder: {
-    type: Boolean,
-    default: false,
-  },
-});
+  cancelledOrder:{
+    type:Boolean,
+    default:false
+  }
 
-module.exports = mongoose.model("Order", ordersSchema);
+})
+
+module.exports = mongoose.model('Order',ordersSchema )
