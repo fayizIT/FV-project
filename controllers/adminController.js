@@ -7,6 +7,7 @@ const Order = require("../models/orderModel");
 const { log } = require("handlebars/runtime");
 const moment = require("moment-timezone");
 const multer = require("multer");
+const Coupon = require("../models/CouponModel")
 
 
 
@@ -393,6 +394,62 @@ const getUserOrders = async (req, res) => {
 };
 
 
+const Setcoupen =async(req,res)=>{
+  try {
+    res.render("admin/AddCoupon")
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+
+
+
+const addCoupon=async(req,res)=>{
+  try{
+   console.log()
+  console.log('adddddddddddCoupon',req.body)
+
+  const coupon=new Coupon ({
+    coupenCode:req.body.couponCode,
+    couponAmount:req.body.couponDiscount,
+    minimumAmount:req.body.couponMinAmount,
+    description:req.body.couponDescription,
+    image:req.file.filename,
+    startDate:req.body.couponStart,
+    expiryDate:req.body.couponExpire,
+  }).save()
+  console.log("getttttttttttttt",coupon);
+  res.redirect('admin/AddCoupon')
+
+  }catch(error){
+    console.log(error.message);
+    res.render('404')
+  }
+}
+
+
+const couponList = async(req,res)=>{
+  try {
+    const coupons = await Coupon.find({}).lean()
+    console.log("getttttttttttt",coupons);
+    res.render("admin/Coupon",{coupons})
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -418,5 +475,8 @@ module.exports = {
   listProducts,
   unlistCategory,
   listCategory,
-  getUserOrders
+  getUserOrders,
+  Setcoupen,
+  addCoupon,
+  couponList,
 };

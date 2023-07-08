@@ -271,8 +271,9 @@
 
                                 <div class="sq align-self-center">
                                     <img class="img-fluid  my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0"
-                                        src="/upload/{{this.images}}" alt="{{image}}" width="135" height="135" />
+                                        src="/uploads/{{Product.images.[0]}}" alt="{{image}}" width="135" height="135" />
                                 </div>
+                                
                                 <div class="media-body my-auto text-right">
                                     <div class="row  my-auto flex-column flex-md-row">
                                         <div class="col my-auto">
@@ -369,7 +370,7 @@
                             <p class="mb-0">{{deliveryAddress.homeAddress}}</p>
                             <p class="mb-0">{{deliveryAddress.city}}</p>
                             <p class="mb-0">{{deliveryAddress.street}}</p>
-                            <p class="mb-0">{{deliveryAddress.postalCode}}</p>
+                            <p class="mb-0">{{deliveryAddress.pincode}}</p>
 
                         </div>
                     </div>

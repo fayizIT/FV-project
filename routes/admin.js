@@ -54,6 +54,13 @@ router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 router.get('/orders',adminAuth.isLogin,adminController.getUserOrders)
 
 
+router.get('/addCoupon',adminController.Setcoupen)
+router.post('/addCoupon',uploads.single('couponImage'),adminController.addCoupon)
+
+router.get('/viewcoupon',adminController.couponList)
+
+
+
 router.get("*", (req, res) => { res.redirect("/admin");});
 
 // router.get("/table", adminController.tableData);

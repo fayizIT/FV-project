@@ -536,36 +536,28 @@ const viewPage =  async (req, res) => {
 
 
 
-
-const  addToCart= async (req, res) => {
+const addToCart = async (req, res) => {
   try {
-    console.log("cart loading");
     const proId = req.body.productId;
-    console.log(proId,"is here setting");
-          
-
     let cart = await Cart.findOne({ user_id: req.session.user_id });
-   
- 
 
     if (!cart) {
-      let newCart = new Cart({ user_id: req.session.user_id, products: [] });
+      const newCart = new Cart({ user_id: req.session.user_id, products: [] });
       await newCart.save();
       cart = newCart;
     }
-   
-    const existingProductIndex = cart.products.findIndex((product) => {0
+
+    const existingProductIndex = cart.products.findIndex((product) => {
       return product.productId.toString() === proId;
     });
 
     if (existingProductIndex === -1) {
       const product = await Product.findById(proId).lean();
-      console.log(proId);
-      const total = product.price; 
+      const total = product.price;
       cart.products.push({
         productId: proId,
         kg: 1,
-        total, 
+        total,
       });
     } else {
       cart.products[existingProductIndex].kg += 1;
@@ -573,89 +565,62 @@ const  addToCart= async (req, res) => {
       cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
     }
 
-    // Calculate the updated total amount for the cart
     cart.total = cart.products.reduce((total, product) => {
       return total + product.total;
     }, 0);
-    
 
     await cart.save();
-   
 
-    // Send a response indicating success or any other relevant data
     res.status(200).json({ message: "Product added to cart successfully" });
   } catch (error) {
-    // Handle any errors that occurred during the process
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
-
-
-
-const getCart = async (req, res) =>{
+const getCart = async (req, res) => {
   try {
+    const cart = await Cart.findOne({ user_id: req.session.user_id })
+      .populate({
+        path: "products.productId",
+      })
+      .lean()
+      .exec();
 
-
-    console.log("entered loading cart page");
-    const check = await Cart.findOne({user_id: req.session.user_id });
-
-    console.log("checking no 1", check, "this is cart");
-    if (check) {
-      const cart = await Cart.findOne({ user_id: req.session.user_id })
-        .populate({
-          path: "products.productId",
-        })
-        .lean()
-        .exec();
-      console.log(cart, "checking no 2");
-      console.log("products", cart.products);
-      const products = cart.products.map((product) => {
-        const total =
-          Number(product.kg) * Number(product.productId.price);
-        return {
-          _id: product.productId._id.toString(),
-           item: product.productId.item,
-          images: product.productId.images,
-          price: product.productId.price,
-          description: product.productId.description,
-          kg: product.productId.kg,
-          total,
-          user_id: req.session.user_id,
-        };
-      });
-      console.log("passing products data is :", products);
-
-      const total = products.reduce(
-        (sum, product) => sum + Number(product.total),
-        0
-      );
-      console.log(total);
-
-      const finalAmount = total;
-
-      // Get the total count of products
-      const totalCount = products.length;
-      console.log(totalCount);
-      res.render("users/cart", {
-        
-        products,
-        total,
-        totalCount,
-        subtotal: total,
-        finalAmount,
-      });
-    } else {
-      res.render("users/cart");
+    if (!cart) {
+      return res.render("users/cart");
     }
 
-    
-  } catch (error) {
-    throw new Error(error.message);
-    
-  }
-}
+    const products = cart.products.map((product) => {
+      const total = Number(product.kg) * Number(product.productId.price);
+      return {
+        _id: product.productId._id.toString(),
+        item: product.productId.item,
+        images: product.productId.images,
+        price: product.productId.price,
+        description: product.productId.description,
+        kg: product.kg,
+        total,
+        user_id: req.session.user_id,
+      };
+    });
 
+    const total = products.reduce((sum, product) => sum + Number(product.total), 0);
+    const totalCount = products.length;
+    const finalAmount = total;
+
+    res.render("users/cart", {
+      products,
+      total,
+      totalCount,
+      subtotal: total,
+      finalAmount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 const changeQuantity = async (req, res) => {
   try {
@@ -701,9 +666,11 @@ const changeQuantity = async (req, res) => {
 
     return res.json(response);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 const loadAddress = async (req, res) => {

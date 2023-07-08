@@ -76,9 +76,12 @@ router.get('/orderFailed',auth.isLogin,userController.orderFailed)
 
 
 
+
+
 router.post("/submit-checkout",auth.isLogin, userController.submitCheckout);
 router.get("/my-orders", auth.isLogin, userController.loadOrders);
 router.get('/viewOrder',auth.isLogin,userController.loadingOrdersViews)
+
 
 
 
