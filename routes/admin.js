@@ -52,15 +52,26 @@ router.get("/list-category", adminAuth.isLogin, adminController.listCategory);
 
 
 router.get('/orders',adminAuth.isLogin,adminController.getUserOrders)
+router.get('/ordersView',adminAuth.isLogin,adminController.loadOrdersView);
+
+
+router.post('/cancel-by-admin',adminController.cancelledByAdmin);
+router.post('/reject-by-admin',adminController.rejectCancellation)
+router.post('/prepare-by-admin',adminController.productDelevery)
+router.post('/deliver-by-admin',adminController.deliveredProduct)
 
 
 router.get('/addCoupon',adminAuth.isLogin,adminController.Setcoupen)
 router.post('/addCoupon',uploads.single('couponImage'),adminController.addCoupon)
 
 router.get('/viewcoupon',adminAuth.isLogin,adminController.couponList)
+router.get('/edit-coupon',adminAuth.isLogin,adminController.loadEditCoupon)
+router.post('/edit-coupon',uploads.single("couponImage"),adminController.editCoupon)
 
-router.get('/coupon-edit',adminAuth.isLogin, adminController.editCouponPage);
-router.post('/update-coupon',adminController.updateCoupon)
+
+
+// router.get('/coupon-edit',adminAuth.isLogin, adminController.editCouponPage);
+// router.post('/update-coupon',adminController.updateCoupon)
 
 
 

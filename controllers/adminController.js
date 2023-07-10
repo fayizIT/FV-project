@@ -8,6 +8,8 @@ const { log } = require("handlebars/runtime");
 const moment = require("moment-timezone");
 const multer = require("multer");
 const Coupon = require("../models/CouponModel")
+const mongoose=require("mongoose")
+const ObjectId = mongoose.Types.ObjectId;
 
 
 
@@ -119,6 +121,7 @@ const adminlogout = async (req, res) => {
         item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
+        inStock: req.body.stock,
         price: req.body.price,
         // images: req.file.filename,
         images: arrayImage,
@@ -394,6 +397,185 @@ const getUserOrders = async (req, res) => {
 };
 
 
+const loadOrdersView=async(req,res)=>{
+  try {
+    console.log("Enterd into the Orederview page........");
+      const orderId = req.query.id;
+     
+
+      console.log(orderId, 'orderId');
+      const order = await Order.findOne({ _id: orderId })
+          .populate({
+              path: 'products.productId',
+              select: 'item price images',
+          })
+
+
+      const createdOnIST = moment(order.date).tz('Asia/Kolkata').format('DD-MM-YYYY h:mm A');
+      order.date = createdOnIST;
+
+      const orderDetails = order.products.map(product => {
+          const images = product.productId.images || []; // Set images to an empty array if it is undefined
+          const image = images.length > 0 ? images[0] : ''; // Take the first image from the array if it exists
+    
+          return {
+            item: product.productId.item,
+            image: images,
+            price: product.productId.price,
+            total: product.total,
+            kg: product.kg,
+            status : order.orderStatus,
+           
+          };
+      });
+
+      const deliveryAddress = {        
+        name: order.addressDetails.name,
+        address: order.addressDetails.address,
+        city: order.addressDetails.city,
+        state: order.addressDetails.state,
+        pincode: order.addressDetails.pincode,
+      };
+
+
+
+      const subtotal = order.orderValue;
+      const cancellationStatus = order.cancellationStatus
+
+
+      console.log(cancellationStatus,'cancellationStatus');
+      console.log(subtotal, 'subtotal');
+      console.log(orderDetails, 'orderDetails');
+      console.log(deliveryAddress, 'deliveryAddress');
+
+      res.render('admin/userOrderView', {
+          orderDetails: orderDetails,
+          deliveryAddress: deliveryAddress,
+          subtotal: subtotal, 
+          orderId: orderId,
+          orderDate: createdOnIST,
+           cancellationStatus:cancellationStatus,
+      });
+  } catch (error) {
+      throw new Error(error.message);
+  }
+}
+
+
+
+const cancelledByAdmin = async (req, res) => {
+  try {
+    const id = req.body.orderId;
+    console.log(id, 'id');
+
+    const url = '/admin/ordersView?id=' + id;
+    console.log(url, 'url');
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { cancellationStatus: "cancellation requested", orderStatus: "cancelled" } },
+      { new: true }
+    ).exec();
+    
+    console.log(updateOrder, 'updateOrder');
+
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
+
+const rejectCancellation = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    console.log(orderId, 'orderID..............');
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      { $set: { orderStatus: "Placed", cancellationStatus: "Not requested" } },
+      { new: true }
+    ).exec();
+
+    console.log(updateOrder, 'OrderUpdated.............');
+
+    const url = '/admin/ordersView?id=' + orderId;
+    console.log(url, 'url......................');
+    
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
+
+
+
+//form other side 
+
+
+const productDelevery = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    console.log(orderId, 'id here............');
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      { $set: { orderStatus: "Shipped", cancellationStatus: "Shipped" } },
+      { new: true }
+    ).exec();
+
+    console.log(updateOrder, 'updateOrderrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+    const url = '/admin/ordersView?id=' + orderId;
+    console.log(url, 'Here is the url..................');
+    
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+const deliveredProduct = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    console.log(orderId, 'id here...........');
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      { _id: new ObjectId(orderId) },
+      { $set: { orderStatus: "Delivered", cancellationStatus: "Delivered" } },
+      { new: true }
+    ).exec();
+
+    console.log(updateOrder, 'updateOrder here..........');
+
+    const url = '/admin/ordersView?id=' + orderId;
+    console.log(url, 'url goes here...........');
+    
+    res.redirect(url);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const Setcoupen =async(req,res)=>{
   try {
     res.render("admin/AddCoupon")
@@ -430,96 +612,87 @@ const addCoupon=async(req,res)=>{
 }
 
 
-const couponList = async(req,res)=>{
+ 
+
+
+
+
+const loadEditCoupon = async (req, res) => {
   try {
-    const coupons = await Coupon.find({}).lean()
-    console.log("getttttttttttt",coupons);
-    res.render("admin/Coupon",{coupons})
-    
+    const id = req.query.id;
+    const coupon = await Coupon.findOne({ _id: id });
+    res.render("editCoupon", { coupon: coupon, currentPage: "",err:'' });
   } catch (error) {
     console.log(error.message);
+  }
+};
+const editCoupon = async (req, res) => {
+  try {
+    const id = req.body.couponId;
+
+    const coupon = await Coupon.findOne({ _id: id });
+    // const checkIdentical=await Coupon.findOne({couponCode:req.body.code, _id: { $ne: id }})
+    const checkCoupon = await Coupon.findOne({
+      couponCode: { $regex: '^' + req.body.code + '$', $options: 'i' },
+      $expr: { $eq: [ { $strLenCP: "$couponCode" }, req.body.code.length ] },_id: { $ne: id }
+    })
+    if(!checkCoupon ){
+      if(req.body.percentage<=25){
+
+        const updatedCoupon = {
+          couponCode: req.body.code,
+          percentage: req.body.percentage,
+          description: req.body.description,
+          expiryDate: req.body.expiryDate,
+          image: coupon.image,
+          status: coupon.status,
+        };
+        const date = new Date(req.body.expiryDate);
+        const now = new Date();
+        if (date > now) {
+          updatedCoupon.status = "Active";
+        }
     
+        if (req.file) {
+          updatedCoupon.image = req.file.filename;
+        }
+        const couponUpdate = await Coupon.updateOne(
+          { _id: id },
+          { $set: updatedCoupon }
+        );
+        res.redirect("/admin/Coupon");
+      }else{
+        res.render('admin/editCoupon',{message:"can't exceed 25 percentage",err:1,coupon: coupon, currentPage: "" })
+      }
+    }else{
+      res.render('admin/editCoupon',{message:"can't add existing couponCode",err:2,coupon: coupon, currentPage: "" })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
+const couponList=async(req,res)=>{
+  try{
+    const coupons= await Coupon.find({})
+    const currentDate=new Date()
+    for(const coupon of coupons){
+      if(coupon.expiryDate <= currentDate){
+        coupon.status='Expired'
+        await coupon.save()
+      }
+     
+    }
+
+res.render('admin/coupon',{coupons})
+
+  }catch(error){
+    console.log(error.message);
+    res.render('404')
   }
 }
-
-
-
-
-const editCouponPage = async (req, res) => {
-  try {
-      console.log("entered into edit coupon page.......");
-  //   const admin = req.session.is_admin;
-    const adminData = await User.find({ is_admin:1 });
-
-    let couponExistError = false;
-
-    if (req.session.couponExistError) {
-      couponExistError = req.session.couponExistError;
-    }
-
-    const couponId = req.query.id;
-    const couponData = await Coupon.findOne({ _id: new ObjectId(couponId) }).lean();
-    console.log("CouponId",couponId);
-     console.log("Coupondata.........",couponData);
-    const dataToRender = {
-     
-      adminData,
-      couponExistError,
-      couponData
-    };
-    console.log("REndered data",dataToRender);
-    res.render('admin/coupon-edit', dataToRender);
-
-    delete req.session.couponExistError;
-  } catch (error) {
-    console.log("Error from editCouponPOST couponController:", error);
-  }
-};
-
-
-
-const updateCoupon = async (req, res) => {
-  try {
-      console.log("Copuon is beeing updated");
-  //   const admin = req.session.is_admin;
-    const adminData = await User.find({ is_admin: 1 });
-
-    const couponDataForUpdate = req.body;
-    const couponId = couponDataForUpdate.couponId;
-
-    const couponExist = await Coupon.find({ couponCode: couponDataForUpdate.couponCode.toLowerCase() }).lean();
-     console.log("couponExit",couponExist);
-    if (couponExist.length === 0) {
-      const couponCode = couponDataForUpdate.couponCode.toLowerCase();
-      const activeCoupon = couponDataForUpdate.activeCoupon === "true" ? true : false;
-      const couponDescription = couponDataForUpdate.couponDescription;
-      const discountPercentage = couponDataForUpdate.discountPercentage;
-      const maxDiscountAmount = couponDataForUpdate.maxDiscountAmount;
-      const minOrderValue = couponDataForUpdate.minOrderValue;
-      const validFor = couponDataForUpdate.validFor;
-
-      const couponUpdation = await Coupon.updateOne({ _id: couponId }, {
-        $set: {
-          couponCode: couponCode,
-          couponDescription: couponDescription,
-          discountPercentage: discountPercentage,
-          maxDiscountAmount: maxDiscountAmount,
-          minOrderValue: minOrderValue,
-          validFor: validFor,
-          activeCoupon: activeCoupon
-        }
-      });
-      console.log("Couponupdation...............",couponUpdation);
-
-      res.redirect('/admin/manage-coupons');
-    } else {
-      req.session.couponExistError = "Coupon code already exists, try some other code";
-      res.redirect('/admin/edit-coupon/?id=' + couponId);
-    }
-  } catch (error) {
-    console.log("Error from updateCouponPOST couponController:", error);
-  }
-};
 
 
 
@@ -556,9 +729,19 @@ module.exports = {
   unlistCategory,
   listCategory,
   getUserOrders,
+  loadOrdersView,
+  cancelledByAdmin,
+  rejectCancellation,
+  productDelevery,
+  deliveredProduct,
   Setcoupen,
   addCoupon,
   couponList,
-  updateCoupon,
-  editCouponPage
+  // updateCoupon,
+  // editCouponPage,
+  editCoupon,
+  loadEditCoupon,
+  couponList,
+ 
+
 };

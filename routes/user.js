@@ -69,9 +69,11 @@ router.post('/change-product-quantity',userController.changeQuantity);
 
 
 router.get("/checkout", auth.isLogin, userController.checkoutLoad);
+router.post('/verify-payment',userController.verifyPayment)
 
 
 router.get('/orderFailed',auth.isLogin,userController.orderFailed)
+router.get('/orderPlaced',auth.isLogin,userController.orderPlaced);
 
 
 

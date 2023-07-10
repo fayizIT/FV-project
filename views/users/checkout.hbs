@@ -113,7 +113,7 @@
 									<img src="/uploads/{{this.images.[0]}}" class="img-fluid" alt="Product Image"
 										width="50px" />
 									<h6 class="my-0">{{this.item}}</h6>
-									{{!-- <h6 class="my-0">{{this.item}} x {{this.quantity}}</h6> --}}
+									<h6 class="my-0">{{this.item}} x {{this.kg}}</h6>
 								</div>
 								<span class="text-muted">₹{{this.total}}</span>
 							</li>
@@ -142,7 +142,7 @@
 					{{/if}}
 					<div class="col-md-8 order-md-1">
 						<h4 class="mb-3">Billing address</h4>
-						<form class="needs-validation" novalidate="" method="post" action="/submit-checkout">
+						<form class="needs-validation" novalidate="" method="post" action="/submit-checkout" id="checkout-form">
 							<div class="mb-3">
 								<label for="username">Name</label>
 								<div class="input-group">
@@ -419,9 +419,78 @@
 
 
 
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+// JavaScript to make Ajax call for Checkout Button - called by checkout button in place-order page
 <script>
 
-	function verifyPayment(razorpayServerPaymentResponse, serverOrderDetails) {
+
+    $(document).ready(function () {
+
+        $('#checkout-button').click(function (e) {
+
+            e.preventDefault(); // To prevent default method of submitting form as here Ajax should be used here to submit the form based on the two different payment methods
+
+            console.log("Checkout Button Ajax call");
+
+            $.ajax({
+
+                url: '/submit-checkout',
+
+                method: 'POST',
+
+                data: $('#checkout-form').serialize(), // Here serialize function is used to get all the data from the form into the data feild of ajax call
+
+                success: (response) => {
+
+                    if (response.COD_CHECKOUT) {
+                        location.href = '/orderPlaced'
+                    } else if (response.ONLINE_CHECKOUT) {
+                        makeRazorpayPayment(response);
+                    } else {
+                        location.href = '/orderFailed'
+                        // If any of the above payment didn't happen, Should create a failed order page to user and display
+                    }
+
+                }
+
+            })
+
+        })
+
+        function makeRazorpayPayment(serverOrderData) {
+            let razorpayKeyId = serverOrderData.razorpayKeyId;
+            let orderDetails = serverOrderData.orderDetails;
+            let userDetails = serverOrderData.userDetails;
+            let userOrderRequestData = serverOrderData.userOrderRequestData;
+console.log("orde",orderDetails.id)
+            let paymentDataToRazorpayServer = {
+                "key": razorpayKeyId,
+                "amount": orderDetails.amount,
+                "currency": "INR",
+                "name": "fv-project",
+                "description": "Test Transaction",
+                "order_id": orderDetails.id,
+                "handler": function (response) {
+                    verifyPayment(response, orderDetails);
+                },
+                "prefill": {
+                    "name": userDetails.name,
+                    "email": userDetails.email,
+                    "contact": userOrderRequestData.mobile
+                },
+                "notes": {
+                    "Customer Address": userOrderRequestData.homeAddress
+                }
+            };
+
+            var razorpayPayment = new Razorpay(paymentDataToRazorpayServer);
+            razorpayPayment.open();
+
+            // If the payment failed for any reason, calling the pre-defined function "on" in Razorpay module using the object of Razorpay
+        }
+
+        function verifyPayment(razorpayServerPaymentResponse, serverOrderDetails) {
             $.ajax({
                 url: '/verify-payment',
                 data: {
@@ -443,10 +512,15 @@
             })
         }
 
+    })
 </script>
 
+
+
+
+
+
 	
-</script>
 
 </body>
 

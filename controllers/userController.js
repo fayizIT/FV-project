@@ -20,7 +20,14 @@ const authToken = "24d90527a334d4688772e70a8782a38a";
 const verifySid = "VA5179ed94458df0af3f9da9ebd4df2360";
 const client = require("twilio")(accountSid, authToken);
 
+const productHelper=require("../helpers/productHelper")
+const userHelpers = require("../helpers/userHelpers")
 
+const Razorpay = require("razorpay");
+var instance = new Razorpay({
+    key_id: 'rzp_test_lttgGofXL0RV96',
+    key_secret: 'tjY5jtZTUF0hWyBS9M4E2EMI',
+});
 
 
 
@@ -1003,6 +1010,16 @@ const checkoutLoad = async (req, res) => {
 }
 
 
+const orderPlaced = async (req, res) => {
+  try {
+      res.render('users/order-sucessfull')
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+
+
 
 const orderFailed = async (req, res) => {
   try {
@@ -1019,76 +1036,221 @@ const orderFailed = async (req, res) => {
 
 
 
-const submitCheckout = async (req, res) => {
+// const submitCheckout = async (req, res) => {
+//   try {
+//     console.log("entered checkout page");
+
+//     const userId = req.session.user_id;
+//     console.log(userId, "userid");
+//     console.log("FIND THE CART DETAILS");
+
+//     const cartData = await Cart.findOne({ user_id: userId }).lean();
+//     console.log(cartData, "cart data has been fetched successfully");
+
+//     console.log(req.body, "all req body");
+//     const paymentMethod = req.body.paymentMethod;
+
+//     console.log(paymentMethod, "paymentmethod");
+//     const status = paymentMethod === "COD" ? "pending" : "Paid";
+
+//     console.log(status, "the status of payment");
+
+//     const addressData = await Addresses.findOne(
+//       { user_id: userId, "addresses.is_default": true },
+//       { "addresses.$": 1 }
+//     ).lean();
+//     console.log(addressData, "address data is this");
+
+//     if (!addressData) {
+//       return res.status(400).json({ error: "Default address not found." });
+//     }
+//     const subtotal = cartData.products.reduce((acc, product) => {
+//       return acc + product.total;
+//     }, 0);
+//     console.log(subtotal, "subtotal");
+
+//     const products = cartData.products.map((product) => ({
+//       productId: product.productId,
+//       quantity: product.quantity,
+//       total: product.total,
+//     }));
+//     console.log(products, "products loading");
+//     const defaultAddress = addressData.addresses[0];
+//     const address = {
+//       name: defaultAddress.name,
+//       mobile: defaultAddress.mobile,
+//       address: defaultAddress.address,
+//       city: defaultAddress.city,
+//       state: defaultAddress.state,
+//       pincode: defaultAddress.pincode,
+//     };
+
+//     console.log(address, "setting the defaulf address");
+
+//     const newOrder = new Order({
+//       userId: userId,
+//       date: Date(),
+//       orderValue: subtotal,
+//       paymentMethod: paymentMethod,
+//       orderStatus: status,
+//       products: products,
+//       addressDetails: address,
+//     });
+//     const savedOrder = await newOrder.save();
+//     console.log(savedOrder, "saved to data base");
+//     await Cart.findOneAndDelete({ user_id: userId });
+//     res.render("users/order-sucessfull", {
+//       savedOrder,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
+
+const submitCheckout = 
+async (req, res) => {
   try {
-    console.log("entered checkout page");
+    console.log("entered placed order routeeeee");
+    let userId = req.session.user_id;
+    let orderDetails = req.body;
+    console.log(orderDetails, "ordeerdetails have reached here");
 
-    const userId = req.session.user_id;
-    console.log(userId, "userid");
-    console.log("FIND THE CART DETAILS");
+    let productsOrdered = await productHelper.getProductListForOrders(userId);
+    console.log(productsOrdered, "products that are ordered");
 
-    const cartData = await Cart.findOne({ user_id: userId }).lean();
-    console.log(cartData, "cart data has been fetched successfully");
-
-    console.log(req.body, "all req body");
-    const paymentMethod = req.body.paymentMethod;
-
-    console.log(paymentMethod, "paymentmethod");
-    const status = paymentMethod === "COD" ? "pending" : "Paid";
-
-    console.log(status, "the status of payment");
-
-    const addressData = await Addresses.findOne(
-      { user_id: userId, "addresses.is_default": true },
-      { "addresses.$": 1 }
-    ).lean();
-    console.log(addressData, "address data is this");
-
-    if (!addressData) {
-      return res.status(400).json({ error: "Default address not found." });
+    if (productsOrdered) {
+      let totalOrderValue = await productHelper.getCartValue(userId);
+      console.log(totalOrderValue, "this is the total order value");
+      productHelper
+        .placingOrder(userId, orderDetails, productsOrdered, totalOrderValue)
+        .then((orderId) => {
+          console.log("successfully reached here");
+          if (req.body["paymentMethod"] === "COD") {
+            console.log("cod_is true here");
+            res.json({ COD_CHECKOUT: true });
+          } else if (req.body["paymentMethod"] === "ONLINE") {
+             
+            productHelper
+              .generateRazorpayOrder(orderId, totalOrderValue)
+              .then(async (razorpayOrderDetails) => {
+                const user = await User.findById({ _id: userId }).lean();
+                res.json({
+                  ONLINE_CHECKOUT: true,
+                  userDetails: user,
+                  userOrderRequestData: orderDetails,
+                  orderDetails: razorpayOrderDetails,
+                  razorpayKeyId: "rzp_test_lttgGofXL0RV96",
+                });
+              });
+          } else {
+            res.json({ paymentStatus: false });
+          }
+        });
+    } else {
+      res.json({ checkoutStatus: false });
+     
     }
-    const subtotal = cartData.products.reduce((acc, product) => {
-      return acc + product.total;
-    }, 0);
-    console.log(subtotal, "subtotal");
-
-    const products = cartData.products.map((product) => ({
-      productId: product.productId,
-      quantity: product.quantity,
-      total: product.total,
-    }));
-    console.log(products, "products loading");
-    const defaultAddress = addressData.addresses[0];
-    const address = {
-      name: defaultAddress.name,
-      mobile: defaultAddress.mobile,
-      address: defaultAddress.address,
-      city: defaultAddress.city,
-      state: defaultAddress.state,
-      pincode: defaultAddress.pincode,
-    };
-
-    console.log(address, "setting the defaulf address");
-
-    const newOrder = new Order({
-      userId: userId,
-      date: Date(),
-      orderValue: subtotal,
-      paymentMethod: paymentMethod,
-      orderStatus: status,
-      products: products,
-      addressDetails: address,
-    });
-    const savedOrder = await newOrder.save();
-    console.log(savedOrder, "saved to data base");
-    await Cart.findOneAndDelete({ user_id: userId });
-    res.render("users/order-sucessfull", {
-      savedOrder,
-    });
+    console.log(checkoutStatus);
   } catch (error) {
     console.log(error.message);
   }
 }
+
+//  async (req, res) => {
+//   try {
+//     console.log("entered placed order routeeeee");
+//     let userId = req.session.user_id;
+//     let orderDetails = req.body;
+//     console.log(orderDetails, "ordeerdetails have reached here");
+
+//     let productsOrdered = await productHelper.getProductListForOrders(userId);
+//     console.log(productsOrdered, "products that are ordered");
+
+//     if (productsOrdered) {
+//       let totalOrderValue = await productHelper.getCartValue(userId);
+//       console.log(totalOrderValue, "this is the total order value");
+//       productHelper
+//         .placingOrder(userId, orderDetails, productsOrdered, totalOrderValue)
+//         .then((orderId) => {
+//           console.log("successfully reached hereeeeeeeeee");
+//           if (req.body["paymentMethod"] === "COD") {
+//             console.log("cod_is true here");
+//             res.json({ COD_CHECKOUT: true });
+//           } else if (req.body["paymentMethod"] === "ONLINE") {
+//             productHelper
+//               .generateRazorpayOrder(orderId, totalOrderValue)
+//               .then(async (razorpayOrderDetails) => {
+//                 const user = await User.findById({ _id: userId }).lean();
+//                 res.json({
+//                   ONLINE_CHECKOUT: true,
+//                   userDetails: user,
+//                   userOrderRequestData: orderDetails,
+//                   orderDetails: razorpayOrderDetails,
+//                   razorpayKeyId: "rzp_test_lttgGofXL0RV96",
+//                 });
+//               });
+//           } else {
+//             res.json({ paymentStatus: false });
+//           }
+//         });
+//     } else {
+//       res.json({ checkoutStatus: false });
+     
+//     }
+//     console.log(checkoutStatus);
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
+
+
+
+const verifyPayment = async (req, res) => {
+  userHelpers.verifyOnlinePayment(req.body).then(() => {
+      let receiptId = req.body['serverOrderDetails[receipt]'];
+
+      let paymentSuccess = true;
+      userHelpers.updateOnlineOrderPaymentStatus(receiptId, paymentSuccess).then(() => {
+          // Sending the receiptId to the above userHelper to modify the order status in the DB
+          // We have set the Receipt Id is same as the orders cart collection ID
+
+          res.json({ status: true });
+      })
+      
+  }).catch((err) => {
+      if (err) {
+          console.log(err);
+
+          let paymentSuccess = false;
+          userHelpers.updateOnlineOrderPaymentStatus(receiptId, paymentSuccess).then(() => {
+              // Sending the receiptId to the above userHelper to modify the order status in the DB
+              // We have set the Receipt Id is same as the orders cart collection ID
+
+              res.json({ status: false });
+          })
+      }
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const loadOrders = async (req, res) => {
   console.log("entered the order loading");
@@ -1318,7 +1480,10 @@ module.exports = {
 
   checkoutLoad,
   orderFailed,
+  orderPlaced,
   submitCheckout,
+  verifyPayment,
+
   loadOrders,
   loadOrdersView,
   cancelOrder

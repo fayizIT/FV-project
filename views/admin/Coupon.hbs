@@ -165,13 +165,13 @@
                         </div>
                     </div> --}}
 
-                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <a href="/admin/category" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Category</a>
-                    <a href="/admin/add-products" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Products</a>
-                    <a href="/admin/users" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Users</a>
-                     <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Ordes</a>
-                    <a href="/admin/viewcoupon" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Coupons</a>
-                     <a href="/admin/addCoupon" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Add-Coupon</a>
+ <a href="index.html" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Dashboard</a>
+<a href="/admin/category" class="nav-item nav-link"><i class="fa fa-list-alt me-2"></i>Category</a>
+<a href="/admin/add-products" class="nav-item nav-link"><i class="fa fa-shopping-cart me-2"></i>Products</a>
+<a href="/admin/users" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Users</a>
+<a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Orders</a>
+<a href="/admin/viewcoupon" class="nav-item nav-link"><i class="fa fa-tags me-2"></i>Coupons</a>
+<a href="/admin/addCoupon" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
 
                     
                 </div>
@@ -284,10 +284,10 @@
                         {{#each coupons}}
                         <div class="coupon col-lg-4" style="background-color: rgb(236, 162, 33); margin-right: 20px;">
                             <div class="coupon-content">
-                                <div class="coupon-image" style="width: 200px; height: 200px; border-radius: 50%; overflow: hidden;">
-                                    <img src="/uploads/{{images}}" alt="Coupon Image" style="width: 100%; height: auto;">
-                                </div>
-                                <div class="coupon-details">
+                                 <div class="coupon-image" style="width: 200px; height: 200px; border-radius: 50%; overflow: hidden;">
+                                    <img src="/uploads/{{image}}" alt="Coupon Image" style="width: 100%; height: auto;">
+                                </div> 
+                                 <div class="coupon-details">
                                     <h3 class="coupon-code">
                                         <i class="fas fa-ticket-alt coupon-code-icon mx-1" style="color: rgb(109, 107, 107);">{{coupenCode}}</i>
                                     </h3>
@@ -302,10 +302,10 @@
                                         Status: <span style="color: red; font-weight: 600;">{{status}}</span>
                                     </p>
                                     {{/if}}
-                                    {{!-- <a href="/admin/deletecoupon/?id={{_id}}" class="delete-link">
+                                    <a href="/admin/deletecoupon/?id={{_id}}" class="delete-link">
                                         <i class="bi bi-trash-fill"></i>
-                                    </a> --}}
-                                    <a href="/admin/edit-Coupon/?id={{_id}}" class="edit-icon" style="text-decoration: none;color: black;">
+                                    </a> 
+                                    <a href="/admin/edit-coupon/?id={{_id}}" class="edit-icon" style="text-decoration: none;color: black;">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </div>
