@@ -96,6 +96,10 @@
 		</div>
 	</nav>
 	<!-- END nav -->
+
+
+
+	
 	<div class="card">
 		<div class="card-body">
 			<div class="container">
@@ -113,31 +117,40 @@
 									<img src="/uploads/{{this.images.[0]}}" class="img-fluid" alt="Product Image"
 										width="50px" />
 									<h6 class="my-0">{{this.item}}</h6>
-									<h6 class="my-0">{{this.item}} x {{this.kg}}</h6>
 								</div>
 								<span class="text-muted">₹{{this.total}}</span>
 							</li>
 							{{/each}}
 							<li class="list-group-item d-flex justify-content-between bg-light">
-								<div class="text-success">
-									<h6 class="my-0">Promo code</h6>
-									<small>EXAMPLECODE</small>
-								</div>
-								<span class="text-success">-₹30</span>
-							</li>
+                            <div class="text-success">
+                                <h6 class="my-0">Total Discount</h6>
+                                
+                            </div>
+                            <span class="text-success">-₹{{this.couponDiscount}}</span>
+                        </li>
 							<li class="list-group-item d-flex justify-content-between">
 								<span>Grand Total</span>
 								<strong>₹{{subtotal}}</strong>
 							</li>
 						</ul>
-						<form class="card p-2">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Promo code">
-								<div class="input-group-append">
-									<button type="submit" class="btn btn-secondary">Redeem</button>
-								</div>
-							</div>
-						</form>
+
+						<form class="card p-2" action="/apply-coupon-request" method="POST">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Coupon code" name="couponCodeFromUser">
+                            {{#if couponApplied}}
+
+                            <p style="color: #21b503; margin-left: 23px;"><b>{{couponApplied}}</b></p>
+
+                            {{else if couponError}}
+
+                            <p style="color: red; margin-left: 24px;"><b>{{couponError}}</b></p>
+
+                            {{/if}}
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-secondary">Redeem</button>
+                            </div>
+                        </div>
+                    </form>
 					</div>
 					{{/if}}
 					<div class="col-md-8 order-md-1">
@@ -147,40 +160,40 @@
 								<label for="username">Name</label>
 								<div class="input-group">
 									<input type="text" class="form-control" id="username" placeholder="Username"
-										required="" value="{{defaultAddress.[0].name}}" readonly>
+										required="" value="{{defaultAddress.name}}" readonly>
 									<div class="invalid-feedback" style="width: 100%;">Your username is required.</div>
 								</div>
 							</div>
 							<div class="mb-3">
 								<label for="email">Mobile</label>
 								<input type="email" class="form-control" id="email" placeholder="Mobile"
-									value="{{defaultAddress.[0].mobile}}" readonly>
+									value="{{defaultAddress.mobile}}" readonly>
 								<div class="invalid-feedback">Please enter a valid email address for shipping updates.
 								</div>
 							</div>
 							<div class="mb-3">
 								<label for="address">Address</label>
 								<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-									value="{{defaultAddress.[0].address}}" required="" readonly>
+									value="{{defaultAddress.address}}" required="" readonly>
 								<div class="invalid-feedback">Please enter your shipping address.</div>
 							</div>
 							<div class="row">
 								<div class="col-md-5 mb-3">
 									<label for="country">City</label>
 									<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-										required="" value="{{defaultAddress.[0].city}}" readonly>
+										required="" value="{{defaultAddress.city}}" readonly>
 									<div class="invalid-feedback">Please select a valid country.</div>
 								</div>
 								<div class="col-md-4 mb-3">
 									<label for="state">State</label>
 									<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-										required="" value="{{defaultAddress.[0].state}}" readonly>
+										required="" value="{{defaultAddress.state}}" readonly>
 									<div class="invalid-feedback">Please provide a valid state.</div>
 								</div>
 								<div class="col-md-3 mb-3">
 									<label for="zip">Postal Code</label>
 									<input type="text" class="form-control" id="zip" placeholder="" required=""
-										value="{{defaultAddress.[0].pincode}}" readonly>
+										value="{{defaultAddress.pincode}}" readonly>
 									<div class="invalid-feedback">Zip code required.</div>
 								</div>
 							</div>
@@ -203,6 +216,11 @@
                                 <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
                                     required="" value="ONLINE">
                                 <label class="custom-control-label" for="debit">ONLINE</label>
+                            </div>
+							<div class="custom-control custom-radio">
+                                <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
+                                    checked="" required="" value="WALLET">
+                                <label class="custom-control-label" for="credit">WALLET</label>
                             </div>
 
                         </div>
@@ -427,7 +445,7 @@
 
     $(document).ready(function () {
 
-        $('#checkout-button').click(function (e) {
+         $('#checkout-button').click(function (e) {
 
             e.preventDefault(); // To prevent default method of submitting form as here Ajax should be used here to submit the form based on the two different payment methods
 
@@ -444,9 +462,17 @@
                 success: (response) => {
 
                     if (response.COD_CHECKOUT) {
+                      console.log("reached here")
                         location.href = '/orderPlaced'
                     } else if (response.ONLINE_CHECKOUT) {
                         makeRazorpayPayment(response);
+                    }else if(response.WALLET_CHECKOUT){
+                      console.log("reached wallet")
+                      console.log(response.orderId)
+
+                        location.href = '/wallet-placed?id='+response.orderId
+                    }else if(response.error){
+                         $('#error-message').text(response.error);
                     } else {
                         location.href = '/orderFailed'
                         // If any of the above payment didn't happen, Should create a failed order page to user and display

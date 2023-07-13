@@ -3,6 +3,9 @@ var session = require("express-session");
 const adminAuth = require("../middleware/adminAuth");
 var multer = require("multer");
 const path = require("path");
+const couponController = require('../controllers/couponController')
+
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {cb(null, path.join(__dirname, "../public/uploads"));},
   filename: function (req, file, cb) {cb(null, Date.now() + "-" + file.originalname);},});
@@ -61,19 +64,17 @@ router.post('/prepare-by-admin',adminController.productDelevery)
 router.post('/deliver-by-admin',adminController.deliveredProduct)
 
 
-router.get('/addCoupon',adminAuth.isLogin,adminController.Setcoupen)
-router.post('/addCoupon',uploads.single('couponImage'),adminController.addCoupon)
-
-router.get('/viewcoupon',adminAuth.isLogin,adminController.couponList)
-router.get('/edit-coupon',adminAuth.isLogin,adminController.loadEditCoupon)
-router.post('/edit-coupon',uploads.single("couponImage"),adminController.editCoupon)
 
 
 
-// router.get('/coupon-edit',adminAuth.isLogin, adminController.editCouponPage);
-// router.post('/update-coupon',adminController.updateCoupon)
 
-
+router.get('/manage-coupons',adminAuth.isLogin, couponController.manageCoupon);
+router.get('/add-coupon',adminAuth.isLogin, couponController.addNewCouponGET);
+router.post('/add-coupon', couponController.addNewCouponPOST);
+router.get('/inactive-coupons',adminAuth.isLogin,couponController.inactiveCouponsGET);
+router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
+router.post('/update-coupon',couponController.updateCouponPOST)
+router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
 
 router.get("*", (req, res) => { res.redirect("/admin");});
 

@@ -29,6 +29,7 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -59,28 +60,17 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
+                  
+
                    
 
-
-                    {{!-- <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">CATEGORY</a>
-                            <a href="typography.html" class="dropdown-item">PRODUCT</a>
-                            <a href="element.html" class="dropdown-item">USERS</a>
-                        </div>
-                    </div> --}}
-
-
-                    
-
-                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Dashboard</a>
+ <a href="index.html" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Dashboard</a>
 <a href="/admin/category" class="nav-item nav-link"><i class="fa fa-list-alt me-2"></i>Category</a>
 <a href="/admin/add-products" class="nav-item nav-link"><i class="fa fa-shopping-cart me-2"></i>Products</a>
 <a href="/admin/users" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Users</a>
 <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Orders</a>
-<a href="/admin/viewcoupon" class="nav-item nav-link"><i class="fa fa-tags me-2"></i>Coupons</a>
-<a href="/admin/addCoupon" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
+<a href="/admin/manage-coupons" class="nav-item nav-link"><i class="fa fa-tags me-2"></i>Coupons</a>
+<a href="/admin/add-coupon" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
 
                     
                 </div>
@@ -181,157 +171,94 @@
             </nav>
 
 
+<style>
+    .coupon-form {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        /* Inner shadow effect */
+    }
 
-
-  <div class="container-fluid">
+    .align-middle {
+        vertical-align: middle;
+    }
+</style>
+<div class="container-fluid pt-4">
     <div class="row">
-      <div class="col-lg-2 col-sm-2 sidebar">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'dashboard')}}active{{/if}}" href="/admin/home">
-              <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'products')}}active{{/if}}" href="/admin/products">
-              <i class="bi bi-basket"></i> Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'users')}}active{{/if}}" href="/admin/users">
-              <i class="bi bi-people"></i> Users
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'orders')}}active{{/if}}" href="/admin/orders">
-              <i class="bi bi-file-earmark-text"></i> Orders
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'category')}}active{{/if}}" href="/admin/category">
-              <i class="bi bi-grid-3x3-gap"></i> Category
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-light {{#if (eq currentPage 'coupon')}}active{{/if}}" href="/admin/coupon">
-              <i class="bi bi-tags-fill"></i> Coupon
-            </a>
-          </li>
-          <!-- <li class="nav-item">
-                <a class="nav-link text-light" id="addCouponLink" href="/admin/addcoupon">
-                  <i class="bi bi-plus"></i>Add Coupon
-                </a>
-              </li> -->
-        </ul>
-      </div>
-      <div class="col-lg-8 col-sm-8">
-        <div class="m-5 pt-5">
-          <div>
-            <h2>Edit Coupon</h2>
-          </div>
-          <div>
-            <form action="editCoupon" onsubmit="return validateDate(event)" method="post" enctype="multipart/form-data">
-              <div class="form-group my-3">
-                <input type="text" name="couponId" value="{{coupon._id}}" hidden>
-                <label for="nameInput">Coupon Code</label>
-                <input type="text" class="form-control form-control-sm" id="nameInput" name="code" placeholder="Enter coupon code" required value="{{coupon.couponCode}}">
-              </div>
-              {{#if message}}
-                {{#if (eq err 2)}}
-                  <p id="message" style="color: red;">{{message}}</p>
-                {{/if}}
-              {{/if}}
-              <div class="form-group my-3">
-                <label for="nameInput">Coupon Offer Percentage</label>
-                <input type="number" class="form-control form-control-sm" name="percentage" placeholder="Enter Offer Percentage" required value="{{coupon.percentage}}">
-              </div>
-              {{#if message}}
-                {{#if (eq err 1)}}
-                  <p id="message" style="color: red;">{{message}}</p>
-                {{/if}}
-              {{/if}}
-              <div class="form-group my-3">
-                <label for="nameInput">Coupon Starting Date</label>
-                <input type="date" class="form-control form-control-sm" name="startingDate" placeholder="Enter date" id="startingDateInput" required>
-              </div>
-              <div class="form-group my-3">
-                <label for="nameInput">Coupon Expire Date</label>
-                <input type="date" class="form-control form-control-sm" name="expiryDate" placeholder="Enter date" required id="expiryDateInput">
-              </div>
-              <div class="form-group my-3```hbs
-">
-                <label for="nameInput">Coupon Description</label>
-                <input type="text" class="form-control form-control-sm" name="description" placeholder="Enter description" required value="{{coupon.description}}">
-              </div>
-              <div>
-                <label for="">upload Coupon Image</label>
-                <input type="file" name="image" value="">
-              </div>
-              <div>
-                <p class="text-success"></p>
-              </div>
-              <button type="submit" class="btn btn-primary my-3">Submit</button>
-            </form>
-          </div>
+        <div class="col-md-12">
+          
+           <div class="coupon-form bg-light rounded p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-4"
+                        style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0; text-align: center">
+                        Deactivated Coupons</h3>
+
+                </div>
+                <div class="table-responsive">
+                    <table class="table w-100" id="myTable">
+                        <thead>
+
+                            <tr>
+                                <th scope="col">Coupon Code</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Discount %</th>
+                                <th scope="col">Maximum Discount</th>
+                                <th scope="col">Minimum Order Value</th>
+                                <th scope="col">Validity</th>
+                                <th scope="col">Usage Count</th>
+                                <th scope="col">Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each inActiveCoupons}}
+                            <tr>
+
+
+                                <td class="align-middle">{{this.couponCode}}</td>
+                                <td class="align-middle">
+                                    {{#if this.activeCoupon}}
+                                    <i class="fas fa-check-circle text-success"></i> Active
+                                    {{else}}
+                                    <i class="fas fa-lock text-danger"></i> In-active
+                                    {{/if}}
+                                </td>
+                                <td class="align-middle">{{this.couponDescription}}</td>
+                                <td class="align-middle">{{this.discountPercentage}}</td>
+                                <td class="align-middle">{{this.maxDiscountAmount}}</td>
+                                <td class="align-middle">{{this.minOrderValue}}</td>
+                                <td class="align-middle">{{this.validFor}}</td>
+                                <td class="align-middle">{{this.usageCount}}</td>
+                                <td>
+
+                                    <a href="/admin/edit-coupon/{{this._id}}" class="btn btn-primary mb-2">EDIT</a>
+
+                                    <form action="/admin/change-coupon-status" method="POST" class="col-md-2">
+
+                                        <input type="hidden" name="couponId" value="{{this._id}}">
+
+                                        <button class="btn btn-success"
+                                            onclick="return confirm('Are you sure that you want to deactivate {{this.couponCode}} coupon?')"
+                                            type="submit">ACTIVATE</button>
+
+                                    </form>
+
+
+                                </td>
+
+
+
+                            </tr>
+                            {{/each}}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.all.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/2.3.0/luxon.min.js"></script>
-  <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
-  <script>
-    // Check if the message element exists
-    var messageElement = document.getElementById('message');
-    if (messageElement) {
-      // Set a timeout to remove the message after 2 seconds
-      setTimeout(function() {
-        messageElement.remove();
-      }, 2000);
-    }
-  </script>
-  <script>
-    function formatDate1(dateString) {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      let month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-  
-    // Get the expiryDate value from the coupon variable
-    const expiryDate = '<%= coupon.expiryDate %>';
-    const startingDate='<%= coupon.startingDate%>';
-    // Format the expiryDate using the formatDate1 function
-    const formatStartingDate=(formatDate1(startingDate))
-    const formattedDate = formatDate1(expiryDate);
-
-    // Set the formatted date as the value of an input field
-    document.getElementById('expiryDateInput').value = formattedDate;
-  </script>
-  <script>
-    function validateDate(event) {
-      var selectedDateStr = document.getElementById("expiryDateInput").value;
-      var selectedDate = luxon.DateTime.fromFormat(selectedDateStr, 'dd-MM-yyyy');
-      
-      var currentDate = luxon.DateTime.local();
-      var minimumDate = currentDate.plus({ days: 3 });
-
-      if (selectedDate < minimumDate) {
-        event.preventDefault(); // Prevent form submission
-        alert("Please select a date at least 3 days from today.");
-        return false;
-      }
-
-      return true;
-    }
-  </script>
-
-     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/chart/chart.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
@@ -343,9 +270,6 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    
 </body>
 
 </html>
- 
-

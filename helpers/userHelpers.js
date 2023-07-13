@@ -3,6 +3,8 @@ const User = require('../models/userModel');
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 var Address = require("../models/addressesModel");
+const wallet = require("../models/walletModel");
+const walletModel = require("../models/walletModel");
 
 const Razorpay = require("razorpay");
 const { ObjectId } = require("mongodb");
@@ -73,4 +75,71 @@ updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
 
 
 
-}
+
+  getCartValue: (userId) => {
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const productDetails = await Cart.findOne({ user_id: userId }).lean();
+                console.log(productDetails, 'productDetails');
+    
+                // Calculate the new subtotal for all products in the cart
+                const subtotal = productDetails.products.reduce((acc, product) => {
+                    return acc + product.total;
+                }, 0);
+    
+                console.log(subtotal, 'subtotal');
+    
+                if (subtotal) {
+                    resolve(subtotal)
+                } else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error)
+            }
+           
+        })
+    },
+
+    walletBalance: (userId) => {
+        console.log("wallet balancee controller");
+        return new Promise(async (resolve, reject) => {
+          try {
+            const walletBalance = await wallet.findOne({ userId });
+            const walletAmount = walletBalance.walletAmount;
+            resolve(walletAmount);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+    
+
+    updatewallet: (userId, orderId) => {
+        console.log("reached helper for wallet");
+        return new Promise(async (resolve, reject) => {
+          try {
+            const orderdetails = await Order.findOne({ _id: orderId });
+            console.log(orderdetails, "orderdetails");
+            const wallet = await walletModel.findOne({ userId: userId });
+            console.log(wallet, "wallet is this");
+            if (wallet) {
+              const updatedWalletAmount =
+                wallet.walletAmount - orderdetails.orderValue;
+              const updatedWallet = await walletModel.findOneAndUpdate(
+                { userId: userId },
+                { $set: { walletAmount: updatedWalletAmount } }
+              );
+              console.log(updatedWalletAmount, "updatedWalletAmount");
+    
+              resolve(updatedWalletAmount);
+            } else {
+              reject("wallet not find");
+            }
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+    };

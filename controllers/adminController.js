@@ -4,10 +4,10 @@ const bcrypt = require("bcrypt");
 const { userLogout } = require("./userController");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
+const Wallet = require("../models/walletModel");
 const { log } = require("handlebars/runtime");
 const moment = require("moment-timezone");
 const multer = require("multer");
-const Coupon = require("../models/CouponModel")
 const mongoose=require("mongoose")
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -472,13 +472,36 @@ const cancelledByAdmin = async (req, res) => {
     console.log(url, 'url');
 
     const updateOrder = await Order.findByIdAndUpdate(
-      { _id: new ObjectId(id) },
+      { _id: id },
       { $set: { cancellationStatus: "cancellation requested", orderStatus: "cancelled" } },
       { new: true }
     ).exec();
-    
-    console.log(updateOrder, 'updateOrder');
 
+    if (
+      (updateOrder.paymentMethod === "ONLINE" ||
+        updateOrder.paymentMethod === "WALLET") &&
+      updateOrder.orderValue > 0
+    ) {
+      const wallet = await Wallet.findOne({ userId: updateOrder.userId }).exec();
+
+      if (wallet) {
+        const updatedWallet = await Wallet.findOneAndUpdate(
+          { userId: updateOrder.userId },
+          { $inc: { walletAmount: updateOrder.orderValue } },
+          { new: true }
+        ).exec();
+        console.log(updatedWallet, "updated wallet");
+      } else {
+        const newWallet = new Wallet({
+          userId: updateOrder.userId,
+          walletAmount: updateOrder.orderValue,
+        });
+        const createdWallet = await newWallet.save();
+        console.log(createdWallet, "created wallet");
+      }
+    }
+
+    console.log(updateOrder, 'updateOrder');
     res.redirect(url);
   } catch (error) {
     console.log(error.message);
@@ -495,7 +518,7 @@ const rejectCancellation = async (req, res) => {
 
     const updateOrder = await Order.findByIdAndUpdate(
       { _id: new ObjectId(orderId) },
-      { $set: { orderStatus: "Placed", cancellationStatus: "Not requested" } },
+      { $set: { orderStatus: "Pending", cancellationStatus: "Not requested" } },
       { new: true }
     ).exec();
 
@@ -576,40 +599,40 @@ const deliveredProduct = async (req, res) => {
 
 
 
-const Setcoupen =async(req,res)=>{
-  try {
-    res.render("admin/AddCoupon")
+// const Setcoupen =async(req,res)=>{
+//   try {
+//     res.render("admin/coupon-add")
     
-  } catch (error) {
-    console.log(error.message);
+//   } catch (error) {
+//     console.log(error.message);
     
-  }
-}
+//   }
+// }
 
 
 
-const addCoupon=async(req,res)=>{
-  try{
-   console.log()
-  console.log('adddddddddddCoupon',req.body)
+// const addCoupon=async(req,res)=>{
+//   try{
+//    console.log()
+//   console.log('adddddddddddCoupon',req.body)
 
-  const coupon=new Coupon ({
-    coupenCode:req.body.couponCode,
-    couponAmount:req.body.couponDiscount,
-    minimumAmount:req.body.couponMinAmount,
-    description:req.body.couponDescription,
-    image:req.file.filename,
-    startDate:req.body.couponStart,
-    expiryDate:req.body.couponExpire,
-  }).save()
-  console.log("getttttttttttttt",coupon);
-  res.redirect('admin/AddCoupon')
+//   const coupon=new Coupon ({
+//     coupenCode:req.body.couponCode,
+//     couponAmount:req.body.couponDiscount,
+//     minimumAmount:req.body.couponMinAmount,
+//     description:req.body.couponDescription,
+//     image:req.file.filename,
+//     startDate:req.body.couponStart,
+//     expiryDate:req.body.couponExpire,
+//   }).save()
+//   console.log("getttttttttttttt",coupon);
+//   res.redirect('admin/AddCoupon')
 
-  }catch(error){
-    console.log(error.message);
-    res.render('404')
-  }
-}
+//   }catch(error){
+//     console.log(error.message);
+//     res.render('404')
+//   }
+// }
 
 
  
@@ -617,82 +640,82 @@ const addCoupon=async(req,res)=>{
 
 
 
-const loadEditCoupon = async (req, res) => {
-  try {
-    const id = req.query.id;
-    const coupon = await Coupon.findOne({ _id: id });
-    res.render("editCoupon", { coupon: coupon, currentPage: "",err:'' });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-const editCoupon = async (req, res) => {
-  try {
-    const id = req.body.couponId;
+// const loadEditCoupon = async (req, res) => {
+//   try {
+//     const id = req.query.id;
+//     const coupon = await Coupon.findOne({ _id: id });
+//     res.render("editCoupon", { coupon: coupon, currentPage: "",err:'' });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+// const editCoupon = async (req, res) => {
+//   try {
+//     const id = req.body.couponId;
 
-    const coupon = await Coupon.findOne({ _id: id });
-    // const checkIdentical=await Coupon.findOne({couponCode:req.body.code, _id: { $ne: id }})
-    const checkCoupon = await Coupon.findOne({
-      couponCode: { $regex: '^' + req.body.code + '$', $options: 'i' },
-      $expr: { $eq: [ { $strLenCP: "$couponCode" }, req.body.code.length ] },_id: { $ne: id }
-    })
-    if(!checkCoupon ){
-      if(req.body.percentage<=25){
+//     const coupon = await Coupon.findOne({ _id: id });
+//     // const checkIdentical=await Coupon.findOne({couponCode:req.body.code, _id: { $ne: id }})
+//     const checkCoupon = await Coupon.findOne({
+//       couponCode: { $regex: '^' + req.body.code + '$', $options: 'i' },
+//       $expr: { $eq: [ { $strLenCP: "$couponCode" }, req.body.code.length ] },_id: { $ne: id }
+//     })
+//     if(!checkCoupon ){
+//       if(req.body.percentage<=25){
 
-        const updatedCoupon = {
-          couponCode: req.body.code,
-          percentage: req.body.percentage,
-          description: req.body.description,
-          expiryDate: req.body.expiryDate,
-          image: coupon.image,
-          status: coupon.status,
-        };
-        const date = new Date(req.body.expiryDate);
-        const now = new Date();
-        if (date > now) {
-          updatedCoupon.status = "Active";
-        }
+//         const updatedCoupon = {
+//           couponCode: req.body.code,
+//           percentage: req.body.percentage,
+//           description: req.body.description,
+//           expiryDate: req.body.expiryDate,
+//           image: coupon.image,
+//           status: coupon.status,
+//         };
+//         const date = new Date(req.body.expiryDate);
+//         const now = new Date();
+//         if (date > now) {
+//           updatedCoupon.status = "Active";
+//         }
     
-        if (req.file) {
-          updatedCoupon.image = req.file.filename;
-        }
-        const couponUpdate = await Coupon.updateOne(
-          { _id: id },
-          { $set: updatedCoupon }
-        );
-        res.redirect("/admin/Coupon");
-      }else{
-        res.render('admin/editCoupon',{message:"can't exceed 25 percentage",err:1,coupon: coupon, currentPage: "" })
-      }
-    }else{
-      res.render('admin/editCoupon',{message:"can't add existing couponCode",err:2,coupon: coupon, currentPage: "" })
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+//         if (req.file) {
+//           updatedCoupon.image = req.file.filename;
+//         }
+//         const couponUpdate = await Coupon.updateOne(
+//           { _id: id },
+//           { $set: updatedCoupon }
+//         );
+//         res.redirect("/admin/Coupon");
+//       }else{
+//         res.render('admin/editCoupon',{message:"can't exceed 25 percentage",err:1,coupon: coupon, currentPage: "" })
+//       }
+//     }else{
+//       res.render('admin/editCoupon',{message:"can't add existing couponCode",err:2,coupon: coupon, currentPage: "" })
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 
 
 
-const couponList=async(req,res)=>{
-  try{
-    const coupons= await Coupon.find({})
-    const currentDate=new Date()
-    for(const coupon of coupons){
-      if(coupon.expiryDate <= currentDate){
-        coupon.status='Expired'
-        await coupon.save()
-      }
+// const couponList=async(req,res)=>{
+//   try{
+//     const coupons= await Coupon.find({})
+//     const currentDate=new Date()
+//     for(const coupon of coupons){
+//       if(coupon.expiryDate <= currentDate){
+//         coupon.status='Expired'
+//         await coupon.save()
+//       }
      
-    }
+//     }
 
-res.render('admin/coupon',{coupons})
+// res.render('admin/coupon',{coupons})
 
-  }catch(error){
-    console.log(error.message);
-    res.render('404')
-  }
-}
+//   }catch(error){
+//     console.log(error.message);
+//     res.render('404')
+//   }
+// }
 
 
 
@@ -734,14 +757,14 @@ module.exports = {
   rejectCancellation,
   productDelevery,
   deliveredProduct,
-  Setcoupen,
-  addCoupon,
-  couponList,
+  // Setcoupen,
+  // addCoupon,
+  // couponList,
   // updateCoupon,
   // editCouponPage,
-  editCoupon,
-  loadEditCoupon,
-  couponList,
+  // editCoupon,
+  // loadEditCoupon,
+  // couponList,
  
 
 };
