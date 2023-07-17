@@ -292,11 +292,16 @@ const EditProduct = async (req, res) => {
 const updateProduct = async (req,res) => {
   try {
     var arrayImage =[]
+    console.log("haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaiiiiiiiiiiiiiiii");
     for (let i = 0; i < req.files.length; i++) {
       arrayImage[i] = req.files[i].filename;
     }
+
+    const existingProduct = await Product.findById(req.query.id);
+    console.log(req.query.id,"kkkkkkkkkkkkkkkkkkkkkkkkk");
+    console.log(existingProduct,"jjjjjjjjjjjjjjjjjjjjjjjjjj");
     console.log("HI UPDATE")
-    const id = req.body.id; // Get the product ID from the request body
+    const id = req.query.id; // Get the product ID from the request body
     console.log(req.body)
     // Create an object with the updated product data
     const updatedProduct = {
@@ -304,12 +309,20 @@ const updateProduct = async (req,res) => {
       category: req.body.category,
       price: req.body.price,
       description: req.body.description,
-      images: arrayImage,
+      // images: arrayImage,
+      images: existingProduct.images
+      
     };
 
-    const updatedData = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
+    const updatedData = 
+
+    await Product.findByIdAndUpdate(
+      { _id: id },
+      { $set: updatedProduct }
+    );
+    console.log("gfetttt",updatedData);
+
     
-   
       res.redirect("/admin/edit-products");
     
   } catch (error) {

@@ -47,10 +47,25 @@ const securePassword = async (password) => {
 
 
 const insertUser = async (req, res) => {
+  console.log("eddddddddddddddddddd");
   try {
     if (req.body.password !== req.body.confirmPassword) {
       return res.render("users/signup", { message: "Passwords do not match" });
+
     }
+
+    const email = req.body.email
+    const mobile = req.body.mobile
+
+     // Check if email or mobile already exists in the database
+     const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
+     console.log(existingUser,"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+     if (existingUser) {
+       return res.render("users/signup", {
+         message: "Email or mobile number already exists",
+       });
+     }
+     console.log(existingUser);
 
     const spassword = await securePassword(req.body.password);
     const user = new User({
