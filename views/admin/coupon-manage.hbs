@@ -64,10 +64,11 @@
 
                    
 
- <a href="index.html" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Dashboard</a>
+<a href="index.html" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Dashboard</a>
 <a href="/admin/category" class="nav-item nav-link"><i class="fa fa-list-alt me-2"></i>Category</a>
 <a href="/admin/add-products" class="nav-item nav-link"><i class="fa fa-shopping-cart me-2"></i>Products</a>
 <a href="/admin/users" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Users</a>
+ <a href="/admin/salesPage" class="nav-item nav-link"><i class="fa fa-chart-line me-2"></i></i>Sales Report</a>
 <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Orders</a>
 <a href="/admin/manage-coupons" class="nav-item nav-link"><i class="fa fa-tags me-2"></i>Coupons</a>
 <a href="/admin/add-coupon" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
@@ -211,7 +212,7 @@
                                 <th scope="col">Maximum Discount</th>
                                 <th scope="col">Minimum Order Value</th>
                                 <th scope="col">Validity</th>
-                                <th scope="col">Usage Count</th>
+                               
                                 <th scope="col">Action</th>
 
                             </tr>
@@ -234,7 +235,7 @@
                                 <td class="align-middle">{{this.maxDiscountAmount}}</td>
                                 <td class="align-middle">{{this.minOrderValue}}</td>
                                 <td class="align-middle">{{this.validFor}}</td>
-                                <td class="align-middle">{{this.usageCount}}</td>
+                                
                                 <td>
 
                                     <a href="/admin/edit-coupon?id={{this._id}}" class="btn btn-primary mb-2">EDIT</a>

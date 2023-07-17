@@ -4,6 +4,9 @@ const Coupon = require("../models/CouponModel")
 const UsedCoupon = require('../models/usedCouponModel')
 const userController = require('../controllers/userController');
 var adminController = require("../controllers/adminController");
+const wallet = require("../models/walletModel");
+
+
 
 const ObjectId = mongoose.Types.ObjectId;
 

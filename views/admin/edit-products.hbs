@@ -41,8 +41,14 @@
             <input type="text" name="item" class="form-control" value="{{products.item}}" required>
         </div>
         <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <input type="text" name="category" class="form-control" value="{{products.category}}" required>
+          <select name="category" class="form-control" >
+  <option value="">{{products.category}}</option>
+  <option value="FRUITS" {{#if (eq products.category 'DRYFRUITS')}}selected{{/if}}>FRUITS </option>
+  <option value="VEGITABLE" {{#if (eq products.category 'VEGITABLE')}}selected{{/if}}>VEGITABLE </option>
+  <option value="DRY FRUIT" {{#if (eq products.category 'DRYFRUITS')}}selected{{/if}}>DRY FRUIT </option>
+  <!-- Add more options as needed -->
+</select>
+
             
 
         </div>

@@ -20,6 +20,7 @@ const UsedCoupon = require('../models/usedCouponModel')
 const userController = require('../controllers/userController');
 var adminController = require("../controllers/adminController");
 const userHelpers = require('../helpers/userHelpers')
+const Wallet = require("../models/walletModel");
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -33,7 +34,7 @@ const manageCoupon = async(req,res)=>{
         const admin = req.session.is_admin;
         const adminData = await User.find({is_admin:admin})
         
-        console.log(adminData,'adminDatacccccccccccccc');
+        console.log(adminData,'adminDataaaaaaa');
         console.log("finddddddddddddddddddd");
         const activeCoupons = await couponHelpers.getActiveCoupons();
         const inActiveCoupons = await couponHelpers.getInActiveCoupons();

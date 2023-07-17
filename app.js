@@ -8,13 +8,24 @@ const hbs = require('hbs');
 const handlebarsHelpers = require("handlebars-helpers")();
 
 const mongoose = require("mongoose");
-mongoose.connect('mongodb://127.0.0.1:27017/fresh_hub');
 
 const config = require('./config/config');
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 
 const app = express();
+
+// Connect to MongoDB
+async function connectToDatabase() {
+  try {
+    await mongoose.connect('mongodb://127.0.0.1:27017/fresh_hub');
+    console.log('Connected to the database.');
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
+}
+
+connectToDatabase();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +54,10 @@ app.use('/', userRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
+});
+
+hbs.registerHelper("inc", function (value, options) {
+  return parseInt(value) + 1;
 });
 
 // error handler

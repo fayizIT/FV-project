@@ -3,8 +3,8 @@ const User = require('../models/userModel');
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 var Address = require("../models/addressesModel");
-const wallet = require("../models/walletModel");
-const walletModel = require("../models/walletModel");
+const Wallet = require("../models/walletModel");
+const moment = require("moment-timezone");
 
 const Razorpay = require("razorpay");
 const { ObjectId } = require("mongodb");
@@ -106,7 +106,7 @@ updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
         console.log("wallet balancee controller");
         return new Promise(async (resolve, reject) => {
           try {
-            const walletBalance = await wallet.findOne({ userId });
+            const walletBalance = await Wallet.findOne({ userId });
             const walletAmount = walletBalance.walletAmount;
             resolve(walletAmount);
           } catch (error) {
@@ -122,12 +122,12 @@ updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
           try {
             const orderdetails = await Order.findOne({ _id: orderId });
             console.log(orderdetails, "orderdetails");
-            const wallet = await walletModel.findOne({ userId: userId });
+            const wallet = await Wallet.findOne({ userId: userId });
             console.log(wallet, "wallet is this");
             if (wallet) {
               const updatedWalletAmount =
                 wallet.walletAmount - orderdetails.orderValue;
-              const updatedWallet = await walletModel.findOneAndUpdate(
+              const updatedWallet = await Wallet.findOneAndUpdate(
                 { userId: userId },
                 { $set: { walletAmount: updatedWalletAmount } }
               );
@@ -142,4 +142,72 @@ updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
           }
         });
       },
+
+
+      getWalletDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const walletDetails = await Wallet.findOne({ userId: userId }).lean()
+                // console.log(walletDetails,'walletDetailsvvvvvvvvvvvvvv');
+
+
+                resolve(walletDetails)
+            } catch (error) {
+                reject(error);
+            }
+        })
+    },
+
+    creditOrderDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const orderDetails = await Order.find({
+                    userId: userId,
+                    $or: [{ paymentMethod: 'ONLINE' }, { paymentMethod: 'WALLET' }],
+                    orderStatus: 'cancelled'
+                }).lean();
+
+                const orderHistory = orderDetails.map(history => {
+                    let createdOnIST = moment(history.date)
+                        .tz('Asia/Kolkata')
+                        .format('DD-MM-YYYY h:mm A');
+
+                    return { ...history, date: createdOnIST };
+                });
+
+                resolve(orderHistory);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    },
+
+    debitOrderDetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const orderDetails = await Order.find({
+                    userId: userId,
+                    paymentMethod: 'WALLET',
+                    $or: [{ orderStatus: 'Placed' }, { orderStatus: 'Delivered' },{orderStatus:'Preparing food'}],
+                  
+                }).lean();
+
+                const orderHistory = orderDetails.map(history => {
+                    let createdOnIST = moment(history.date)
+                        .tz('Asia/Kolkata')
+                        .format('DD-MM-YYYY h:mm A');
+
+                    return { ...history, date: createdOnIST };
+                });
+
+                resolve(orderHistory);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     };
+
+
+

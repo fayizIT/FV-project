@@ -21,9 +21,10 @@ const userSchema = mongoose.Schema({
     confirmPassword: {
         type: String,
     },
-    is_admin:{
-        type:String,
-        required:true
+    is_admin: {
+        type: Boolean,
+        default: false,
+        required: true
     },
     is_verified:{
         type:Number,

@@ -9,6 +9,8 @@ const { log } = require("handlebars/runtime");
 const moment = require("moment-timezone");
 const multer = require("multer");
 const mongoose=require("mongoose")
+const adminHelpers = require('../helpers/adminHelpers')
+const fs = require('fs')
 const ObjectId = mongoose.Types.ObjectId;
 
 
@@ -16,49 +18,102 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const loginLoad = async (req, res) => {
   try {
-    res.render('admin/login', { layouts: "admin-layout" })
+    res.render('admin/login')
   } catch (error) {
     console.log(error.message);
   }
 };
 
+// const loginVerify = async (req, res) => {
+//   try {
+//     console.log(req.body);
+//     const email = req.body.email;
+//     const password = req.body.password;
+//     const userData = await User.findOne({ email: email });
+//     console.log(userData);
+//     if (userData) {
+//       const passMatch = await bcrypt.compare(password, userData.password);
+//       console.log(passMatch);
+//       if (passMatch) {
+//         if (userData.is_admin === 1) {
+//           req.session.user_id = userData._id;
+//           console.log(req.session.user_id);
+//           res.redirect("admin/home");
+//         } else {
+//           req.session.user_id = userData._id;
+//           console.log(req.session.user_id);
+//           res.redirect("admin/home");
+//         }
+//       } else {
+//         res.render("admin/login", { message: "You are not an admin" });
+//       }
+//     } else {
+//       res.render("admin/login", );
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
 const loginVerify = async (req, res) => {
-  try {
-    console.log(req.body);
-    const email = req.body.email;
-    const password = req.body.password;
-    const userData = await User.findOne({ email: email });
-    console.log(userData);
-    if (userData) {
-      const passMatch = await bcrypt.compare(password, userData.password);
-      console.log(passMatch);
-      if (passMatch) {
-        if (userData.is_admin === 1) {
-          req.session.user_id = userData._id;
-          console.log(req.session.user_id);
-          res.redirect("admin/home");
-        } else {
-          req.session.user_id = userData._id;
-          console.log(req.session.user_id);
-          res.redirect("admin/home");
-        }
+
+try {
+  const email = req.body.email;
+  const password = req.body.password;
+
+
+  userData = await User.findOne({ email: email })
+
+  if (userData) {
+
+      const passwordMatch = await bcrypt.compare(password, userData.password);
+
+      if (passwordMatch) {
+          if (userData.is_admin === false) {
+              res.render('admin/login', { message: 'You are not admin' })
+          } else {
+              req.session.user_id = userData._id;
+              req.session.is_admin = userData.is_admin
+
+
+              res.redirect('admin/home')
+          }
       } else {
-        res.render("admin/login", { layouts: "admin-layout", message: "You are not an admin" });
+          res.render('admin/login', { message: "Your password is incorrect"})
       }
-    } else {
-      res.render("admin/login", { layouts: "admin-layout" });
-    }
-  } catch (error) {
-    console.log(error.message);
+  } else {
+      res.render('admin/login', { message: "Your email is incorrect"})
   }
-};
+} catch (error) {
+  console.log(error.message, 'failed to verify login')
+
+}
+}
 
 
 
 const loadDash = async (req, res) => {
   try {
     User.findById({_id:req.session.user_id})
-    res.render('admin/home', );
+    const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
+
+    const totalUser = dashBoardDetails.totaluser;
+    const totalSales = dashBoardDetails.totalSales;
+    const salesbymonth = dashBoardDetails.salesbymonth
+    const paymentMethod = dashBoardDetails.paymentMethod;
+    const yearSales = dashBoardDetails.yearSales
+    const todaySales = dashBoardDetails.todaySales
+    // console.log(todaySales,'todaySales');
+    // console.log(totalUser,'totalUser');
+    // console.log(totalSales,'totalSales');
+   
+    console.log(paymentMethod,'paymentMethod');
+    // console.log(yearSales,'yearSales');
+   let sales=encodeURIComponent(JSON.stringify(salesbymonth))
+
+   console.log(sales,'sales');
+
+    res.render('admin/home', { totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0] })
   } catch (error) {
     console.log(error.message);
   }
@@ -121,7 +176,7 @@ const adminlogout = async (req, res) => {
         item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
-        inStock: req.body.stock,
+  
         price: req.body.price,
         // images: req.file.filename,
         images: arrayImage,
@@ -248,25 +303,26 @@ const adminlogout = async (req, res) => {
     try {
       const id = req.query.id;
       console.log(id);
-      const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: true } });
-      // console.log(userData);
-      res.redirect("/admin/users");
+      const userData = await User.findByIdAndUpdate(id, { blocked: true });
+      res.json({ success: true });
     } catch (error) {
-      console.log(message.error);
+      console.log(error.message);
+      res.status(500).json({ success: false });
     }
   };
-
+  
   const unblockUser = async (req, res) => {
     try {
       const id = req.query.id;
       console.log(id);
-      const userData = await User.findByIdAndUpdate({ _id: id },{ $set: { blocked: false } });
-      // console.log(userData);
-      res.redirect("/admin/users");
+      const userData = await User.findByIdAndUpdate(id, { blocked: false });
+      res.json({ success: true });
     } catch (error) {
-      console.log(message.error);
+      console.log(error.message);
+      res.status(500).json({ success: false });
     }
   };
+  
 
 
 
@@ -600,138 +656,72 @@ const deliveredProduct = async (req, res) => {
 };
 
 
+const loadSalesPage = async(req,res)=>{
+  try {
 
+    const orderSuccessDetails = await adminHelpers.orderSuccess()
+    // console.log(orderSuccessDetails,'order');
+  
+    res.render("admin/admin-sales", { order:orderSuccessDetails.orderHistory, total:orderSuccessDetails.total });
+  } catch (error) {
+     console.log(error.message)
+  }
+}
 
+const getSalesToday = async(req,res)=>{
+  try {
+    const todaySales = await adminHelpers.salesToday()
+    // console.log(todaySales,'todaySales');
+    res.render("admin/admin-sales", { order:todaySales.orderHistory, total:todaySales.total });
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
+const getWeekSales = async(req,res)=>{
+  try {
+    const weeklySales = await adminHelpers.weeklySales()
 
+     res.render("admin/admin-sales", { order:weeklySales.orderHistory, total:weeklySales.total });
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
+const getMonthSales = async(req,res)=>{
+  try {
+    const montlySales = await adminHelpers.monthlySales()
+    res.render("admin/admin-sales", { order:montlySales.orderHistory, total:montlySales.total });
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
+const getYearlySales = async(req,res)=>{
+  try {
+    const yearlySales = await adminHelpers.yearlySales()
+    res.render("admin/admin-sales", { order:yearlySales.orderHistory, total:yearlySales.total });
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
+const salesWithDate = async(req,res)=>{
+  try {
+    const salesWithDate = await adminHelpers.salesWithDate(req,res)
+    res.render("admin/admin-sales", { order:salesWithDate.orderHistory, total:salesWithDate.total });
+  } catch (error) {
+    console.log(error.message,'salesWithDate controller error')
+  }
+}
 
-
-
-
-
-// const Setcoupen =async(req,res)=>{
-//   try {
-//     res.render("admin/coupon-add")
-    
-//   } catch (error) {
-//     console.log(error.message);
-    
-//   }
-// }
-
-
-
-// const addCoupon=async(req,res)=>{
-//   try{
-//    console.log()
-//   console.log('adddddddddddCoupon',req.body)
-
-//   const coupon=new Coupon ({
-//     coupenCode:req.body.couponCode,
-//     couponAmount:req.body.couponDiscount,
-//     minimumAmount:req.body.couponMinAmount,
-//     description:req.body.couponDescription,
-//     image:req.file.filename,
-//     startDate:req.body.couponStart,
-//     expiryDate:req.body.couponExpire,
-//   }).save()
-//   console.log("getttttttttttttt",coupon);
-//   res.redirect('admin/AddCoupon')
-
-//   }catch(error){
-//     console.log(error.message);
-//     res.render('404')
-//   }
-// }
-
-
- 
-
-
-
-
-// const loadEditCoupon = async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     const coupon = await Coupon.findOne({ _id: id });
-//     res.render("editCoupon", { coupon: coupon, currentPage: "",err:'' });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-// const editCoupon = async (req, res) => {
-//   try {
-//     const id = req.body.couponId;
-
-//     const coupon = await Coupon.findOne({ _id: id });
-//     // const checkIdentical=await Coupon.findOne({couponCode:req.body.code, _id: { $ne: id }})
-//     const checkCoupon = await Coupon.findOne({
-//       couponCode: { $regex: '^' + req.body.code + '$', $options: 'i' },
-//       $expr: { $eq: [ { $strLenCP: "$couponCode" }, req.body.code.length ] },_id: { $ne: id }
-//     })
-//     if(!checkCoupon ){
-//       if(req.body.percentage<=25){
-
-//         const updatedCoupon = {
-//           couponCode: req.body.code,
-//           percentage: req.body.percentage,
-//           description: req.body.description,
-//           expiryDate: req.body.expiryDate,
-//           image: coupon.image,
-//           status: coupon.status,
-//         };
-//         const date = new Date(req.body.expiryDate);
-//         const now = new Date();
-//         if (date > now) {
-//           updatedCoupon.status = "Active";
-//         }
-    
-//         if (req.file) {
-//           updatedCoupon.image = req.file.filename;
-//         }
-//         const couponUpdate = await Coupon.updateOne(
-//           { _id: id },
-//           { $set: updatedCoupon }
-//         );
-//         res.redirect("/admin/Coupon");
-//       }else{
-//         res.render('admin/editCoupon',{message:"can't exceed 25 percentage",err:1,coupon: coupon, currentPage: "" })
-//       }
-//     }else{
-//       res.render('admin/editCoupon',{message:"can't add existing couponCode",err:2,coupon: coupon, currentPage: "" })
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-
-
-// const couponList=async(req,res)=>{
-//   try{
-//     const coupons= await Coupon.find({})
-//     const currentDate=new Date()
-//     for(const coupon of coupons){
-//       if(coupon.expiryDate <= currentDate){
-//         coupon.status='Expired'
-//         await coupon.save()
-//       }
-     
-//     }
-
-// res.render('admin/coupon',{coupons})
-
-//   }catch(error){
-//     console.log(error.message);
-//     res.render('404')
-//   }
-// }
-
-
-
+const downloadSalesReport = async(req,res)=>{
+  try {
+    const salesPdf = await adminHelpers.salesPdf(req,res)
+  } catch (error) {
+    console.log(error.message,'pdfSales controller error')
+  }
+}
 
 
 
@@ -770,14 +760,13 @@ module.exports = {
   rejectCancellation,
   productDelevery,
   deliveredProduct,
-  // Setcoupen,
-  // addCoupon,
-  // couponList,
-  // updateCoupon,
-  // editCouponPage,
-  // editCoupon,
-  // loadEditCoupon,
-  // couponList,
+  loadSalesPage,
+  getSalesToday,
+  getWeekSales,
+  getMonthSales,
+  getYearlySales,
+  salesWithDate,
+  downloadSalesReport,
  
 
 };

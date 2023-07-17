@@ -75,9 +75,10 @@
 <a href="/admin/category" class="nav-item nav-link"><i class="fa fa-list-alt me-2"></i>Category</a>
 <a href="/admin/add-products" class="nav-item nav-link"><i class="fa fa-shopping-cart me-2"></i>Products</a>
 <a href="/admin/users" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Users</a>
+ <a href="/admin/salesPage" class="nav-item nav-link"><i class="fa fa-chart-line me-2"></i></i>Sales Report</a>
 <a href="/admin/orders" class="nav-item nav-link"><i class="fa fa-clipboard-list me-2"></i>Orders</a>
 <a href="/admin/manage-coupons" class="nav-item nav-link"><i class="fa fa-tags me-2"></i>Coupons</a>
-<a href="/admin/coupon-add" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
+<a href="/admin/add-coupon" class="nav-item nav-link"><i class="fa fa-plus-circle me-2"></i>Add Coupon</a>
                     </div>
                 </div>
             </nav>
@@ -199,7 +200,7 @@
                                         <th scope="col">SL NO</th>
                                         <th scope="col">ITEM</th>
                                         <th scope="col">CATEGORY</th>
-                                        <th scope="col">STOCK</th>
+                                        
                                         <th scope="col">PRICE</th>
                                         <th scope="col">IMAGES</th>
                                         <th scope="col">DESCRIPTION</th>
@@ -212,7 +213,6 @@
                                         <th class="align-middle" scope="row">{{serialNumber}}</th>
                                         <td class="align-middle">{{item}}</td>
                                         <td class="align-middle">{{category}}</td>
-                                         <td class="align-middle">{{this.inStock}}Kg</td>
                                         <td class="align-middle">₹{{price}}</td>
                                         <td class="align-middle"><img src="/uploads/{{images.[0]}}" alt="{{images}}"
                                                 width="50px" height="50px"></td>
@@ -267,10 +267,6 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                             <div class="mb-3">
-                            <label for="stock" class="form-label">Stock</label>
-                            <input type="number" name="stock" class="form-control" required>
-                        </div>
                             <label for="price" class="form-label">Price</label>
                             <input type="number" name="price" class="form-control" required>
                         </div>

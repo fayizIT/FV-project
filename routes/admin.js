@@ -43,7 +43,7 @@ router.get("/unblock", adminAuth.isLogin, adminController.unblockUser);
 // router.post("/edit-product", adminAuth.isLogin, adminController.updateProduct);
 
 
-router.get("/edit-product", adminController.EditProduct);
+router.get("/edit-product", adminAuth.isLogin,adminController.EditProduct);
 router.post("/edit-products",uploads.array("image",4),adminController.updateProduct);
 
 router.get("/unlist-products",adminAuth.isLogin,adminController.unlistProducts);
@@ -75,6 +75,16 @@ router.get('/inactive-coupons',adminAuth.isLogin,couponController.inactiveCoupon
 router.get('/edit-coupon',adminAuth.isLogin, couponController.editCouponGET);
 router.post('/update-coupon',couponController.updateCouponPOST)
 router.post('/change-coupon-status',couponController.changeCouponStatusPOST)
+
+
+
+router.get('/salesPage',adminAuth.isLogin,adminController.loadSalesPage)
+router.get('/getTodaySales',adminAuth.isLogin,adminController.getSalesToday)
+router.get('/getWeekSales',adminAuth.isLogin,adminController.getWeekSales)
+router.get('/getMonthlySales',adminAuth.isLogin,adminController.getMonthSales)
+router.get('/getYearlySales',adminAuth.isLogin,adminController.getYearlySales)
+router.post('/salesWithDate',adminController.salesWithDate)
+router.get('/salesReport',adminAuth.isLogin,adminController.downloadSalesReport)
 
 router.get("*", (req, res) => { res.redirect("/admin");});
 

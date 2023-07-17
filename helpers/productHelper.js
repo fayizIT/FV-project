@@ -24,7 +24,7 @@ module.exports = {
 
     const products = productDetails.products.map((product) => ({
       productId: product.productId,
-      quantity: product.quantity,
+      kg: product.kg,
       total: product.total,
     }));
 
