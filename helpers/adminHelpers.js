@@ -154,6 +154,47 @@ loadingDashboard: async (req, res) => {
     })
 
 },
+OrdersList: async (req, res) => {
+    try {
+        const userId = req.session.user_id;
+        const { paymentMethod, orderStatus } = req.query;
+console.log(req.query,"rq  query");
+        
+        let query = { userId };
+console.log(query,"query");
+        // Apply filters if provided
+        if (paymentMethod) {
+            query.paymentMethod = paymentMethod;
+        }
+        if (orderStatus) {
+            query.orderStatus = orderStatus;
+        }
+
+        let orderDetails = await Order.find(query).populate('userId').lean();
+         console.log(orderDetails, 'orderDetails');
+
+        // Reverse the order of transactions
+        orderDetails = orderDetails.reverse();
+
+        const orderHistory = orderDetails.map(history => {
+            let createdOnIST = moment(history.date)
+                .tz('Asia/Kolkata')
+                .format('DD-MM-YYYY h:mm A');
+
+            return { ...history, date: createdOnIST, userName: history.userId.name };
+        });
+
+  
+
+        return orderHistory
+    } catch (error) {
+        console.log(error.message)
+    }
+},
+
+
+
+
 
 orderSuccess: () => {
     return new Promise(async (resolve, reject) => {
@@ -576,7 +617,7 @@ salesPdf: (req, res) => {
             // Create document definition
             const docDefinition = {
                 content: [
-                    { text: "Juco Berry", style: "header" },
+                    { text: "Fresh Hub", style: "header" },
                     { text: "\n" },
                     { text: "Order Information", style: "header1" },
                     { text: "\n" },

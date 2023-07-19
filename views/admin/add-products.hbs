@@ -200,7 +200,7 @@
                                         <th scope="col">SL NO</th>
                                         <th scope="col">ITEM</th>
                                         <th scope="col">CATEGORY</th>
-                                        
+                                        <th scope="col">STOCK</th>
                                         <th scope="col">PRICE</th>
                                         <th scope="col">IMAGES</th>
                                         <th scope="col">DESCRIPTION</th>
@@ -213,6 +213,7 @@
                                         <th class="align-middle" scope="row">{{serialNumber}}</th>
                                         <td class="align-middle">{{item}}</td>
                                         <td class="align-middle">{{category}}</td>
+                                         <td class="align-middle">{{this.inStock}}</td>
                                         <td class="align-middle">₹{{price}}</td>
                                         <td class="align-middle"><img src="/uploads/{{images.[0]}}" alt="{{images}}"
                                                 width="50px" height="50px"></td>
@@ -243,50 +244,75 @@
 
     <!-- Add Product Modal -->
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Add Product</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action="/admin/add-products" method="post" enctype="multipart/form-data">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="item" class="form-label">Item</label>
-                            <input type="text" name="item" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="category" class="form-label">Category</label>
-                            <select name="category" class="form-control" required>
-                                {{#each categories}}
-                                <option value="{{category}}">{{category}}</option>
-                                {{/each}}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="number" name="price" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Image</label>
-                            <input type="file" name="image" class="form-control" multiple required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <input type="text" name="description" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </div>
-                </form>
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add Product</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <form action="/admin/add-products" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="item" class="form-label">Item</label>
+                        <input type="text" name="item" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category" class="form-control" required>
+                            {{#each categories}}
+                            <option value="{{category}}">{{category}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" name="price" class="form-control" required oninput="validateStock(this)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" name="stock" class="form-control" required oninput="validateStock(this)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Image</label>
+                        <input type="file" name="image" class="form-control" multiple required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" name="description" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+    </div>
+
+    <script>
+  function validateStock(input) {
+    if (input.value < 0) {
+      input.setCustomValidity("Stock cannot be less than 0");
+    } else {
+      input.setCustomValidity("");
+    }
+  }
+
+  function validatePrice(input) {
+    if (input.value < 0) {
+      input.setCustomValidity("Price cannot be less than 0");
+    } else {
+      input.setCustomValidity("");
+    }
+  }
+</script>
+
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

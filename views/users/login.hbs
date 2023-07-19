@@ -217,58 +217,96 @@
         color: darkgray;
         text-decoration: none;
     }
+
+  .error-message {
+    display: none;
+  }
+
+  .invalid + .error-message {
+    display: block;
+  }
 </style>
 
-<div class="login-wrap">
+
+
+<body>
+  <div class="login-wrap">
     <div class="login-html">
-        <input id="tab-1" type="radio" name="tab" class="sign-in" checked>
-        <label for="tab-1" class="tab">Welcome to LogIn Page</label>
-        <input id="tab-2" type="radio" name="tab" class="sign-up">
-        <label for="tab-2" class="tab"></label>
-        <div class="login-form">
-            <div class="sign-in-htm">
-                <form action="/login" method="POST">
-                    <div class="group">
-                        <label for="email" class="label">E-mail</label>
-                        <input id="email" name="email" type="email" class="input" data-type="email" required>
-                    </div>
-                    <div class="group">
-                        <label for="pass" class="label">Password</label>
-                        <input id="pass" type="password" class="input" data-type="password" name="password" required>
-                    </div>
-                    <div class="group">
-                        <input id="check" type="checkbox" class="check" checked>
-                        <label for="check"><span class="icon"></span> Keep me Signed in</label>
-                    </div>
-                    <div class="group">
-                        <input type="submit" class="button" value="Sign In">
-                    </div>
-                    <div class="hr"></div>
-                    <div class="foot-lnk">
-                        <div class="forgot-link">
-                            <a href="/forget">Forgot Password?</a>
-                           
-                        </div>
-                         <br>
-                        <div class="verification-link">
-                            <a href="/verification">Verification</a>
-                        </div>
-                         <br>
-
-                         <a href="/otp-verification">LogIn with OTP</a>
-                    </div>
-                    <br>
-
-                    <div class="signup-button">
-    <a href="/signup">Sign Up</a>
-</div>
-                </form>
-                {{#if message}}
-                    <p class="error-message">{{message}}</p>
-                {{/if}}
+      <input id="tab-1" type="radio" name="tab" class="sign-in" checked>
+      <label for="tab-1" class="tab">Welcome to LogIn Page</label>
+      <input id="tab-2" type="radio" name="tab" class="sign-up">
+      <label for="tab-2" class="tab"></label>
+      <div class="login-form">
+        <div class="sign-in-htm">
+          <form action="/login" method="POST">
+            <div class="group">
+              <label for="email" class="label">E-mail</label>
+              <input id="email" name="email" type="email" class="input" data-type="email" required>
+              <p id="email-error" class="error-message">Invalid email address.</p>
             </div>
+            <div class="group">
+              <label for="pass" class="label">Password</label>
+              <input id="pass" type="password" class="input" data-type="password" name="password" required>
+              <p id="password-error" class="error-message">Password must be at least 8 characters long.</p>
+            </div>
+            <div class="group">
+              <input id="check" type="checkbox" class="check" checked>
+              <label for="check"><span class="icon"></span> Keep me Signed in</label>
+            </div>
+            <div class="group">
+              <input type="submit" class="button" value="Sign In">
+            </div>
+            <div class="hr"></div>
+            <div class="foot-lnk">
+              <div class="forgot-link">
+                <a href="/forget">Forgot Password?</a>
+              </div>
+              <br>
+              <div class="verification-link">
+                <a href="/verification">Verification</a>
+              </div>
+              <br>
+              <a href="/otp-verification">LogIn with OTP</a>
+            </div>
+            <br>
+            <div class="signup-button">
+              <a href="/signup">Sign Up</a>
+            </div>
+          </form>
+          {{#if message}}
+          <p class="error-message">{{message}}</p>
+          {{/if}}
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
+  <script>
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('pass');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
 
+    function validateEmail() {
+      const email = emailInput.value;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        emailInput.classList.add('invalid');
+      } else {
+        emailInput.classList.remove('invalid');
+      }
+    }
+
+    function validatePassword() {
+      const password = passwordInput.value;
+      if (password.length < 8) {
+        passwordInput.classList.add('invalid');
+      } else {
+        passwordInput.classList.remove('invalid');
+      }
+    }
+
+    emailInput.addEventListener('input', validateEmail);
+    passwordInput.addEventListener('input', validatePassword);
+  </script>
+</body>

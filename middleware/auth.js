@@ -24,7 +24,7 @@ const isLogin = async (req, res, next) => {
       if (userData && !userData.blocked) {
         next(); // Proceed to the next middleware
       } else {
-        req.session.destroy();
+       delete req.session.user_id;
         return res.redirect("/login");
       }
     } else {

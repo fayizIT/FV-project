@@ -24,36 +24,7 @@ const loginLoad = async (req, res) => {
   }
 };
 
-// const loginVerify = async (req, res) => {
-//   try {
-//     console.log(req.body);
-//     const email = req.body.email;
-//     const password = req.body.password;
-//     const userData = await User.findOne({ email: email });
-//     console.log(userData);
-//     if (userData) {
-//       const passMatch = await bcrypt.compare(password, userData.password);
-//       console.log(passMatch);
-//       if (passMatch) {
-//         if (userData.is_admin === 1) {
-//           req.session.user_id = userData._id;
-//           console.log(req.session.user_id);
-//           res.redirect("admin/home");
-//         } else {
-//           req.session.user_id = userData._id;
-//           console.log(req.session.user_id);
-//           res.redirect("admin/home");
-//         }
-//       } else {
-//         res.render("admin/login", { message: "You are not an admin" });
-//       }
-//     } else {
-//       res.render("admin/login", );
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
+
 
 const loginVerify = async (req, res) => {
 
@@ -72,7 +43,7 @@ try {
           if (userData.is_admin === false) {
               res.render('admin/login', { message: 'You are not admin' })
           } else {
-              req.session.user_id = userData._id;
+              req.session.admin_id = userData._id;
               req.session.is_admin = userData.is_admin
 
 
@@ -97,6 +68,8 @@ const loadDash = async (req, res) => {
     User.findById({_id:req.session.user_id})
     const dashBoardDetails = await adminHelpers.loadingDashboard(req, res)
 
+    const orderDetails = await adminHelpers.OrdersList(req,res)
+    
     const totalUser = dashBoardDetails.totaluser;
     const totalSales = dashBoardDetails.totalSales;
     const salesbymonth = dashBoardDetails.salesbymonth
@@ -113,7 +86,7 @@ const loadDash = async (req, res) => {
 
    console.log(sales,'sales');
 
-    res.render('admin/home', { totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0] })
+    res.render('admin/home', { totalUser,todaySales:todaySales[0] ,totalSales:totalSales[0], salesbymonth:encodeURIComponent(JSON.stringify(salesbymonth)) ,paymentMethod:encodeURIComponent(JSON.stringify(paymentMethod)),yearSales:yearSales[0],orderDetails:orderDetails })
   } catch (error) {
     console.log(error.message);
   }
@@ -122,7 +95,8 @@ const loadDash = async (req, res) => {
 
 const adminlogout = async (req, res) => {
     try {
-      req.session.destroy();
+     delete req.session.admin_id
+     delete req.session.is_admin
       res.redirect('/admin/login');
     } catch (error) {
       console.log(error.message);
@@ -176,7 +150,7 @@ const adminlogout = async (req, res) => {
         item: req.body.item,
         productName: req.body.productname,
         category: req.body.category,
-  
+        inStock: req.body.stock,
         price: req.body.price,
         // images: req.file.filename,
         images: arrayImage,
@@ -363,8 +337,10 @@ const updateProduct = async (req,res) => {
     const updatedProduct = {
       item: req.body.item,
       category: req.body.category,
+      inStock: req.body.stock,
       price: req.body.price,
       description: req.body.description,
+
       // images: arrayImage,
       images: existingProduct.images
       
@@ -471,7 +447,7 @@ const loadOrdersView=async(req,res)=>{
     console.log("Enterd into the Orederview page........");
       const orderId = req.query.id;
      
-
+    
       console.log(orderId, 'orderId');
       const order = await Order.findOne({ _id: orderId })
           .populate({

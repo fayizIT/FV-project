@@ -249,22 +249,24 @@
                   <td class="quantity">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <button class="btn btn-outline-secondary" onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.kg}})">
-  <i class="fas fa-minus"></i>
-</button>
+                        <button class="btn btn-outline-secondary"
+                          onclick="changeQuantity('{{this._id}}', -1, '{{this.user_id}}', {{this.kg}})">
+                          <i class="fas fa-minus"></i>
+                        </button>
 
                       </div>
                       <input type="text" class="form-control text-center kg-input" id="kgInput_{{this._id}}"
                         value="{{this.kg}}" min="1" readonly>
                       <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.kg}})">
-  <i class="fas fa-plus"></i>
-</button>
+                        <button class="btn btn-outline-secondary"
+                          onclick="changeQuantity('{{this._id}}', 1, '{{this.user_id}}', {{this.kg}})">
+                          <i class="fas fa-plus"></i>
+                        </button>
 
                       </div>
                     </div>
                   </td>
-                  
+
                   {{!-- <td class="total" id="productTotal_{{this._id}}">
                     <span id="productTotal">{{total}}</span>
                   </td> --}}
@@ -352,11 +354,12 @@
   <script src="/js/jquery.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     // Function to update the cart quantity in local storage
     function updateCartQuantity(kg) {
-      const productTotal=document.getElementById("productTotal")
+      const productTotal = document.getElementById("productTotal")
       const cartNumber = $('#cartNumber');
       cartNumber.text(kg);
       localStorage.setItem('cartQuantity', kg);
@@ -376,13 +379,16 @@
           console.log(response);
           if (response.deleteProduct) {
             location.reload(); // Reload the page
+          } else if (response.outOfStock) {
+            console.log("out of stock");
+            showOutOfStockAlert();
           } else {
             console.log(response)
             const kgInput = $('#kgInput_' + proId);
             kgInput.val(response.kg);
 
-          const productTotalElement = $('#productTotal_' + proId).find('.productTotal');
-          productTotalElement.text(response.productTotal);
+            const productTotalElement = $('#productTotal_' + proId).find('.productTotal');
+            productTotalElement.text(response.productTotal);
 
             const productTotal = $('#productTotal_' + proId);
             productTotal.find('.productTotal').text(response.total);
@@ -399,6 +405,32 @@
             // Store the cart quantity in local storage
             localStorage.setItem('cartQuantity', cartNumber);
           }
+        }
+      });
+    }
+
+    function showOutOfStockAlert() {
+      Swal.fire({
+        title: "Out of Stock",
+        text: "This product is currently out of stock.",
+        icon: "warning",
+        showCancelButton: false,
+        confirmButtonColor: "#000000",
+        confirmButtonText: "OK",
+        customClass: {
+          container: "swal-container",
+          title: "swal-title",
+          text: "swal-text",
+          confirmButton: "swal-button"
+        },
+        onOpen: () => {
+          // Set the text color to white
+          const swalContainer = document.querySelector(".swal-container");
+          swalContainer.style.color = "white";
+
+          // Remove the border from the OK button
+          const okButton = document.querySelector(".swal-button");
+          okButton.style.border = "none";
         }
       });
     }
@@ -435,13 +467,6 @@
 
     $('#confirmDeleteBtn').click(deleteproduct); 
   </script>
-
-
-
-
-
-
-
 
 </body>
 

@@ -20,7 +20,7 @@ router.get('/signup', auth.isLogOut, userController.loadSignup);
 router.post('/signup', userController.insertUser);
 router.get('/success', auth.isLogOut, userController.successPage);
 router.get('/verify', userController.verifyMail);
-router.get('/', auth.isLogOut, userController.loadlogin);
+router.get('/', userController.loadwelcome);
 router.get('/login', auth.isLogOut, userController.loadlogin);
 router.post('/login', userController.verifyLogin);
 router.get('/home', auth.isLogin, userController.loadindex);

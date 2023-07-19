@@ -417,7 +417,38 @@
     .signup-heading {
       color: aliceblue;
     }
-  </style>
+
+    
+  .login-form .group .input.invalid {
+    border: 2px solid red;
+  }
+
+  .login-form .group .error-message {
+    display: none;
+    color: red;
+    margin-top: 5px;
+  }
+
+  .login-form .group .error-message.active {
+    display: block;
+  }
+
+    .login-form .group .input.invalid {
+    border: 2px solid red;
+  }
+
+  .login-form .group .error-message {
+    display: none;
+    color: red;
+    margin-top: 5px;
+  }
+
+  .login-form .group .error-message.active {
+    display: block;
+  }
+</style>
+ 
+ 
 </head>
 
 <body>
@@ -428,11 +459,13 @@
         <form method="POST" action="/signup">
           <div class="group">
             <label for="user" class="label">Username</label>
-            <input id="user" name="name" type="text" class="input" required>
+            <input id="user" name="name" type="text" class="input" maxlength="20" required>
+            <p id="name-error" class="error-message">Name should not exceed 20 characters.</p>
           </div>
           <div class="group">
             <label for="email" class="label">E-mail</label>
             <input id="email" name="email" type="email" class="input" data-type="email" required>
+            <p id="email-error" class="error-message">Invalid email address.</p>
           </div>
           <div class="group">
             <label for="pass" class="label">Password</label>
@@ -441,12 +474,12 @@
           <div class="group">
             <label for="confirm-pass" class="label">Confirm Password</label>
             <input id="confirm-pass" name="confirmPassword" type="password" class="input" data-type="password" required>
+            <p id="password-error" class="error-message">Passwords do not match.</p>
           </div>
-          <p id="password-error" class="error-message" style="display: none;">Passwords do not match.</p>
-
           <div class="group">
             <label for="mobile" class="label">Mobile Number</label>
             <input id="mobile" name="mobile" type="text" class="input" required>
+            <p id="mobile-error" class="error-message">Invalid mobile number.</p>
           </div>
           <div class="group">
             <input type="submit" class="button" value="Sign Up">
@@ -454,34 +487,76 @@
           <div class="foot-lnk">
             <a href="/login">Already a Member?</a><br><br>
           </div>
-          
-          
         </form>
-
-        {{#if message}}
-          <p style="color: red;" class="error-message">{{message}}</p>
-          {{/if}}
-          <div class="hr"></div>
       </div>
     </div>
   </div>
 
-   <script>
-  const passwordInput = document.getElementById('pass');
-  const confirmPassInput = document.getElementById('confirm-pass');
-  const passwordError = document.getElementById('password-error');
+  <script>
+    const nameInput = document.getElementById('user');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('pass');
+    const confirmPassInput = document.getElementById('confirm-pass');
+    const mobileInput = document.getElementById('mobile');
+    const nameError = document.getElementById('name-error');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+    const mobileError = document.getElementById('mobile-error');
 
-  function checkPasswordMatch() {
-    if (passwordInput.value !== confirmPassInput.value) {
-      passwordError.style.display = 'block';
-    } else {
-      passwordError.style.display = 'none';
+    function validateName() {
+      const name = nameInput.value;
+      if (name.length > 20) {
+        nameInput.classList.add('invalid');
+        nameError.classList.add('active');
+      } else {
+        nameInput.classList.remove('invalid');
+        nameError.classList.remove('active');
+      }
     }
-  }
 
-  passwordInput.addEventListener('input', checkPasswordMatch);
-  confirmPassInput.addEventListener('input', checkPasswordMatch);
-</script>
+    function validateEmail() {
+      const email = emailInput.value;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        emailInput.classList.add('invalid');
+        emailError.classList.add('active');
+      } else {
+        emailInput.classList.remove('invalid');
+        emailError.classList.remove('active');
+      }
+    }
+
+    function validatePassword() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPassInput.value;
+      if (password !== confirmPassword) {
+        passwordInput.classList.add('invalid');
+        confirmPassInput.classList.add('invalid');
+        passwordError.classList.add('active');
+      } else {
+        passwordInput.classList.remove('invalid');
+        confirmPassInput.classList.remove('invalid');
+        passwordError.classList.remove('active');
+      }
+    }
+
+    function validateMobile() {
+      const mobile = mobileInput.value;
+      const mobilePattern = /^\d{10}$/;
+      if (!mobilePattern.test(mobile)) {
+        mobileInput.classList.add('invalid');
+        mobileError.classList.add('active');
+      } else {
+        mobileInput.classList.remove('invalid');
+        mobileError.classList.remove('active');
+      }
+    }
+
+    nameInput.addEventListener('input', validateName);
+    emailInput.addEventListener('input', validateEmail);
+    passwordInput.addEventListener('input', validatePassword);
+    confirmPassInput.addEventListener('input', validatePassword);
+    mobileInput.addEventListener('input', validateMobile);
+  </script>
 </body>
-
 

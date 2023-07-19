@@ -14,7 +14,6 @@ const productHepler = require("../helpers/productHelper");
 const moment = require("moment-timezone");
 const ObjectId = mongoose.Types.ObjectId;
 const twilio = require("twilio");
-const fs = require('fs')
 const categoryModel = require('../models/categoryModel');
 const accountSid = "AC33898e9e5916409727aac0861a79477e";
 const authToken = "c5bc93f6cf674369853dbb678ccbaafc";
@@ -190,6 +189,20 @@ const verifyMail = async (req, res) => {
     );
     console.log(updateInfo);
     res.render("users/email-verified");
+  } catch (error) {
+    console.log(error.message);
+    res.render("error", { error });
+  }
+};
+
+
+
+
+//welcome page
+const loadwelcome = async (req, res) => {
+  try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.render("users/index");
   } catch (error) {
     console.log(error.message);
     res.render("error", { error });
@@ -383,7 +396,7 @@ const editLoad = async (req, res) => {
 //logout 
 const userLogout = async (req, res) => {
   try {
-    req.session.destroy();
+    delete req.session.user_id;
     res.redirect('/');
   } catch (error) {
     console.log(error.message);
@@ -595,6 +608,7 @@ const addToCart = async (req, res) => {
     const existingProductIndex = cart.products.findIndex((product) => {
       return product.productId.toString() === proId;
     });
+    console.log(existingProductIndex,"existingProductIndex");
 
     if (existingProductIndex === -1) {
       const product = await Product.findById(proId).lean();
@@ -605,8 +619,12 @@ const addToCart = async (req, res) => {
         total,
       });
     } else {
-      cart.products[existingProductIndex].kg += 1;
       const product = await Product.findById(proId).lean();
+      const existingProduct = cart.products[existingProductIndex];
+        if (existingProduct.kg + 1 > product.inStock) {
+          return res.status(400).json({ message: "stock limit reached" });
+        }
+      cart.products[existingProductIndex].kg += 1;
       cart.products[existingProductIndex].total += product.price; // Update the total by adding the price of the product
     }
 
@@ -615,6 +633,7 @@ const addToCart = async (req, res) => {
     }, 0);
 
     await cart.save();
+    console.log(cart);
 
     res.status(200).json({ message: "Product added to cart successfully" });
   } catch (error) {
@@ -673,7 +692,30 @@ const changeQuantity = async (req, res) => {
     const productId = new mongoose.Types.ObjectId(req.body.productId);
     const kg = req.body.kg;
     const count = req.body.count;
+    const cartFind = await Cart.findOne({ user_id: userId });
+      const productsData = await Product.findById(productId);
 
+      const findProduct = cartFind.products.find((product) =>
+        product.productId._id.equals(productId)
+      );
+    
+      const sumProductKgAndCount =
+        parseInt(findProduct.kg) + parseInt(count);
+
+      if (sumProductKgAndCount > productsData.inStock) {
+        const response = { outOfStock: true };
+        res.send(response);
+        return response;
+      }
+      console.log(productsData, "productsData is here ..............");
+      const cartId = cartFind._id;
+      console.log(userId, "userId");
+      console.log(productId, "productid");
+      console.log(kg, "kg");
+      console.log(cartId, "cartId");
+      console.log(count, "count");
+
+      // Find the cart for the given user and product
     const cart = await Cart.findOneAndUpdate(
       { user_id: userId, 'products.productId': productId },
       { $inc: { 'products.$.kg': count } },
@@ -684,6 +726,8 @@ const changeQuantity = async (req, res) => {
       throw new Error('Cart not found');
     }
 
+
+    // Update the total for the specific product in the cart
     const updatedProduct = cart.products.find(product => product.productId.equals(productId));
     if (!updatedProduct) {
       throw new Error('Product not found in cart');
@@ -1378,6 +1422,9 @@ const cancelOrder = async (req, res) => {
       { new: true }
     ).exec();
 
+
+   
+
     res.redirect(url);
   } catch (error) {
     console.log(error.message);
@@ -1390,6 +1437,7 @@ module.exports = {
   loadSignup,
   successPage,
   verifyMail,
+  loadwelcome,
   loadlogin,
   verifyLogin,
   forgetLoad,

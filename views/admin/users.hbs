@@ -189,53 +189,7 @@
         <div class="col-md-12">
             
 
-            {{!-- <div class="bg-light rounded p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-4" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 1.2em; margin-bottom: 0;">Category List</h6>
-                    <a href="/admin/unlisted-category" class="btn btn-outline-danger m-2">Unlisted Category</a> --}}
-                </div>
-                {{!-- <div class="table-responsive">
-                    <table class="table w-100">
-                        <thead>
-                            <tr>
-                                <th scope="col">SL NO</th>
-                                <th scope="col">NAME</th>
-                                <th scope="col">EMAIL</th> 
-                                <th scope="col">MOBILE</th>
-                                <th scope="col">VERIFIED</th>
-                                <th scope="col">ACTION</th>
-
-                                
-                                
-
-                               
-
-                            </tr>
-                            
-                        </thead>
-                      
-                        <tbody>
-                            {{#each user }}
-                            <tr>
-                                <th class="align-middle" scope="row">{{serialNumber}}</th>
-                                <td class="align-middle">{{name}}</td>
-                                <td class="align-middle">{{email}}</td>
-                                 <td class="align-middle">{{mobile}}</td>
-                                 {{#if is_verified}}
-                                <td class="align-middle">VERIFIED</td>
-                                {{else}}
-                                <td class="align-middle">NOT VERIFIED</td>
-                                {{/if}}
-
-                                <td class="align-middle">  <a href="/admin/edit-user?id={{_id}}" class="btn btn-outline-success m-2">EDIT</a> </td>
-                                <td class="align-middle">  <a href="/admin/block?id={{_id}}" class="btn btn-outline-danger m-2">BLOCK</a> </td>
-
-                                 
-                            </tr>
-                            {{/each}}
-                        </tbody>
-                    </table>
-                </div> --}}
+          
                 <div class="table-responsive">
     <table class="table w-100">
   <thead>
@@ -314,7 +268,7 @@
     });
   }
 
-  function blockUser(userId) {
+ function blockUser(userId) {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', `/admin/block?id=${userId}`, true);
   xhr.onreadystatechange = function() {
@@ -329,8 +283,7 @@
           const button = document.getElementById(`blockButton-${userId}`);
           if (button) {
             button.innerHTML = 'UNBLOCK';
-            button.classList.remove('btn-outline-danger');
-            button.classList.add('btn-outline-primary');
+            button.style.backgroundColor = 'blue';
             button.setAttribute('onclick', `unblockUser('${userId}')`);
           }
         });
@@ -361,8 +314,7 @@ function unblockUser(userId) {
           const button = document.getElementById(`blockButton-${userId}`);
           if (button) {
             button.innerHTML = 'BLOCK';
-            button.classList.remove('btn-outline-primary');
-            button.classList.add('btn-outline-danger');
+            button.style.backgroundColor = 'red';
             button.setAttribute('onclick', `blockUser('${userId}')`);
           }
         });
@@ -377,6 +329,7 @@ function unblockUser(userId) {
   };
   xhr.send();
 }
+
 
 </script>
 

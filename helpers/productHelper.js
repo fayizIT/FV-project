@@ -1,6 +1,7 @@
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 var Address = require("../models/addressesModel");
+const userHelpers = require("../helpers/userHelpers")
 
 const Razorpay = require("razorpay");
 var instance = new Razorpay({
@@ -51,7 +52,7 @@ module.exports = {
       }
     });
   },
-
+  
   placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
     console.log("enter  the helper placing order");
     let orderStatus =
@@ -92,6 +93,10 @@ module.exports = {
     );
     const placedOrder = await orderDetails.save();
     console.log(placedOrder, "save to the database");
+
+    const stockDecrease = await userHelpers.updateProductStock(
+      orderedProducts
+    );
     await Cart.deleteMany({ user_id: userId });
     console.log("placing db order id here jdslkcjdsjk");
     let dbOrderId = placedOrder._id.toString();

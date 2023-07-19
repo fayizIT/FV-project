@@ -5,6 +5,7 @@ const Cart = require("../models/cartModel");
 var Address = require("../models/addressesModel");
 const Wallet = require("../models/walletModel");
 const moment = require("moment-timezone");
+const Product = require("../models/productModel");
 
 const Razorpay = require("razorpay");
 const { ObjectId } = require("mongodb");
@@ -205,7 +206,27 @@ updateOnlineOrderPaymentStatus: (ordersCollectionId, onlinePaymentStatus) => {
                 reject(error);
             }
         });
-    }
+    },
+
+
+    updateProductStock: async (orderedProducts) => {
+        try {
+          console.log("reached updatedproductstock");
+          for (const orderedProduct of orderedProducts) {
+            const productId = orderedProduct.productId;
+            const kg = orderedProduct.kg;
+    
+            // Find the product by its ID
+            const product = await Product.findById(productId);
+    
+            // Update the product stock by subtracting the ordered quantity
+            product.inStock -= kg;
+    
+            // Save the updated product
+            await product.save();
+          }
+        } catch (error) {}
+      }
 
     };
 
