@@ -18,7 +18,7 @@ const app = express();
 // Connect to MongoDB
 async function connectToDatabase() {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/fresh_hub');
+    await mongoose.connect('mongodb+srv://fayizcj94:lYgBK7CBpEBof1L5@cluster0.glddfks.mongodb.net/');
     console.log('Connected to the database.');
   } catch (error) {
     console.error('Error connecting to the database:', error);

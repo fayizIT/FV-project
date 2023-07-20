@@ -128,6 +128,16 @@
     margin-right: 10px;
   }
 
+.main-product-image {
+    width: 300px; /* Adjust the width as per your preference */
+    height: 300px; /* Adjust the height as per your preference */
+    overflow: hidden; /* Optional: to hide any overflowing parts of the image */
+  }
+  .main-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   
 </style>
 
@@ -135,9 +145,9 @@
   <div class="row">
     
     <div class="col-md-6">
-      <div class="main-product-image">
-        <img class="img-fluid" src="/uploads/{{singleProduct.images.[0]}}" alt="img">
-      </div>
+  <div class="main-product-image">
+    <img src="/uploads/{{singleProduct.images.[0]}}" alt="img">
+  </div>
       <!-- Additional product images -->
       <div class="secondary-images">
         <div class="image-thumbnail" onclick="changeMainImage('/uploads/{{singleProduct.images.[0]}}')">

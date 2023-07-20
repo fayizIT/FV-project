@@ -1,6 +1,6 @@
 const sessionSecret = "your-session-secret-key";
-const emailUser = "chadrick.shanahan83@ethereal.email";
-const emailPassword = "fThF4yJB6AGdrzCuVq";
+const emailUser = "fayizcj94@gmail.com";
+const emailPassword = "lyklxhwtmepxrixw";
 
 module.exports = {
   sessionSecret,

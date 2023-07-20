@@ -16,8 +16,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const twilio = require("twilio");
 const categoryModel = require('../models/categoryModel');
 const accountSid = "AC33898e9e5916409727aac0861a79477e";
-const authToken = "c5bc93f6cf674369853dbb678ccbaafc";
-const verifySid = "VA5179ed94458df0af3f9da9ebd4df2360";
+const authToken = "e3e624c360264e92bedc120ae25754b6";
+const verifySid = "VAce328069e0ce1eceb47a1fefecc125f2";
 const client = require("twilio")(accountSid, authToken);
 const productHelper = require("../helpers/productHelper")
 const userHelpers = require("../helpers/userHelpers")
@@ -144,7 +144,7 @@ const successPage = async (req, res) => {
 const sendVerifyMail = async (name, email, user_id) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp.gmail.com',
       port: 587,
       secure: false,
       requireTls: true,
@@ -569,7 +569,7 @@ const verifyOtp = async (req, res) => {
         }
 
       });
-  } catch (error) {
+  } catch (error) {   
 
     throw new Error(error.message);
   }
