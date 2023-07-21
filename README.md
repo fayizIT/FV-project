@@ -27,7 +27,7 @@ To get started with this project, follow these steps:
    - `PORT`: Port number for the backend server.
 5. Start the backend server: `cd backend && npm start`
 6. Start the frontend development server: `cd frontend && npm start`
-7. Open your browser and visit `http://localhost:3000` to see the running application.
+7. Open your browser and visit `http://fayizcj.in` to see the running application.
 
 ## Project Structure
 
