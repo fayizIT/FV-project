@@ -101,7 +101,7 @@ const sendResetpasswordmail = async (name, email, token) => {
       html:
         "<p> hi" +
         name +
-        ',please click here to <a href="http://localhost:3000/forget-password?token=' +
+        ',please click here to <a href="http://fayizcj.in/forget-password?token=' +
         token +
         '">reset </a>your password</p>',
     };
@@ -161,7 +161,7 @@ const sendVerifyMail = async (name, email, user_id) => {
       html:
         "<p>Hi " +
         name +
-        ', please click <a href="http://localhost:3000/verify?id=' +
+        ', please click <a href="http://fayizcj.in/verify?id=' +
         user_id +
         '">here</a> to verify your email.</p>',
     };
