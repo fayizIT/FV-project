@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const bcrypt = require("bcrypt");
-const { userLogout } = require("./userController");
+// const { userLogout } = require("./userController");
 const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
 const Wallet = require("../models/walletModel");

@@ -221,6 +221,58 @@ const loadlogin = async (req, res) => {
 };
 
 //checking the email and password before login
+// const verifyLogin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const userData = await User.findOne({ email });
+
+//     if (!userData) {
+//       return res.render('users/login', { message: "Email and password are incorrect" });
+//     }
+
+//     // Check if the user is blocked
+//     if (userData.blocked) {
+//       return res.render('users/login', { message: "User is blocked. Please contact the administrator." });
+//     }
+
+//     const passwordMatch = await bcrypt.compare(password, userData.password);
+
+//     if (!passwordMatch) {
+//       return res.render('users/login', { message: "Email and password are incorrect" });
+//     }
+
+//     if (userData.is_verified === 0) {
+//       return res.render('users/login', { message: "Please verify your email" });
+//     } else {
+//       req.session.user_id = userData._id;
+//       req.session.blocked = userData.blocked
+//       console.log(req.session.blocked, ' req.session.blocked');
+//       const wallet = await Wallet.findOne({ userId: userData._id }).exec();
+//       if (wallet) {
+//         res.setHeader(
+//           "Cache-Control",
+//           "no-store, no-cache, must-revalidate, private"
+//         );
+//         res.redirect("/home");
+//       } else {
+//         const newWallet = new Wallet({
+//           userId: userData._id,
+//           walletAmount: 0,
+//         });
+//         const createdWallet = await newWallet.save();
+
+//       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+//       res.redirect('/home');
+//     }
+
+//   } catch (error) {
+//     console.log(error.message);
+//     res.render("error", { error });
+//   }
+  
+// };
+
+
 const verifyLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -245,19 +297,29 @@ const verifyLogin = async (req, res) => {
       return res.render('users/login', { message: "Please verify your email" });
     } else {
       req.session.user_id = userData._id;
-      req.session.blocked = userData.blocked
+      req.session.blocked = userData.blocked;
       console.log(req.session.blocked, ' req.session.blocked');
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-      res.redirect('/home');
+      const wallet = await Wallet.findOne({ userId: userData._id }).exec();
+      if (wallet) {
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+        res.redirect("/home");
+      } else {
+        const newWallet = new Wallet({
+          userId: userData._id,
+          walletAmount: 0,
+        });
+        const createdWallet = await newWallet.save();
+
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.redirect('/home');
+      }
     }
-
-
-
   } catch (error) {
     console.log(error.message);
     res.render("error", { error });
   }
 };
+
 
 
 //forgot page
