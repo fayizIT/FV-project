@@ -44,20 +44,26 @@ const insertUser = async (req, res) => {
   try {
     if (req.body.password !== req.body.confirmPassword) {
       return res.render("users/signup", { message: "Passwords do not match" });
-
     }
 
-    const email = req.body.email
-    const mobile = req.body.mobile
+    const email = req.body.email;
+    const mobile = req.body.mobile;
 
     // Check if email or mobile already exists in the database
     const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
     console.log(existingUser, "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
     if (existingUser) {
-      return res.render("users/signup", {
-        message: "Email or mobile number already exists",
-      });
+      if (existingUser.email === email) {
+        return res.render("users/signup", {
+          message: "Email already exists, please use a different email",
+        });
+      } else if (existingUser.mobile === mobile) {
+        return res.render("users/signup", {
+          message: "Mobile number already exists, please use a different mobile number",
+        });
+      }
     }
+
     console.log(existingUser);
 
     const spassword = await securePassword(req.body.password);
@@ -201,13 +207,15 @@ const verifyMail = async (req, res) => {
 //welcome page
 const loadwelcome = async (req, res) => {
   try {
+    const productData = await Product.find({ unlist: false }).lean()
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    res.render("users/index");
+    res.render("users/index", { Product: productData });
   } catch (error) {
     console.log(error.message);
     res.render("error", { error });
   }
 };
+
 
 //login the page
 const loadlogin = async (req, res) => {

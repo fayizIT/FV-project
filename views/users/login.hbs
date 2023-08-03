@@ -247,7 +247,7 @@
             <div class="group">
               <label for="pass" class="label">Password</label>
               <input id="pass" type="password" class="input" data-type="password" name="password" required>
-              <p id="password-error" class="error-message">Password must be at least 8 characters long.</p>
+              <p id="password-error" class="error-message">Password must be at least 6 characters long.</p>
             </div>
             <div class="group">
               <input id="check" type="checkbox" class="check" checked>
@@ -298,13 +298,13 @@
     }
 
     function validatePassword() {
-      const password = passwordInput.value;
-      if (password.length < 8) {
-        passwordInput.classList.add('invalid');
-      } else {
-        passwordInput.classList.remove('invalid');
-      }
+    const password = passwordInput.value;
+    if (password.length < 6) { // Change the minimum password length to 6
+      passwordInput.classList.add('invalid');
+    } else {
+      passwordInput.classList.remove('invalid');
     }
+  }
 
     emailInput.addEventListener('input', validateEmail);
     passwordInput.addEventListener('input', validatePassword);
