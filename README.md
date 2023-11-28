@@ -31,7 +31,7 @@ To get started with this project, follow these steps:
 
 ## Project Structure
 
-This project follows an MC (Model-Controller) architecture for organizing the backend code. Here is the basic structure:
+This project follows an MVC (Model-view-Controller) architecture for organizing the backend code. Here is the basic structure:
 
 - `backend/` - Contains the backend server code.
   - `controllers/` - Controllers responsible for handling the business logic.
