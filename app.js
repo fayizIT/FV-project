@@ -19,6 +19,7 @@ const app = express();
 async function connectToDatabase() {
   try {
     await mongoose.connect('mongodb+srv://fayizcj94:lYgBK7CBpEBof1L5@cluster0.glddfks.mongodb.net/');
+ 
     console.log('Connected to the database.');
   } catch (error) {
     console.error('Error connecting to the database:', error);

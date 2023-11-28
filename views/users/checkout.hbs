@@ -105,147 +105,136 @@
 
 
 
-				<div class="row">
-					{{#if products}}
-					<div class="col-md-4 order-md-2 mb-4">
-						<h4 class="d-flex justify-content-between align-items-center mb-3">
-							<span class="text-muted">Your cart</span>
-							<span class="badge badge-secondary badge-pill">{{this.totalCount}}</span>
-						</h4>
-						<ul class="list-group mb-3 ">
-							{{#each products}}
-							<li class="list-group-item d-flex justify-content-between lh-condensed">
-								<div>
 
-									<img src="/uploads/{{images.[0]}}" class="img-fluid" alt="Product Image"
-										width="50px" />
-									<h6 class="my-0">{{this.item}} x {{this.kg}}</h6>
 
-								</div>
-								<span class="text-muted">₹{{this.total}}</span>
-							</li>
-							{{/each}}
+						       
 
-							<li class="list-group-item d-flex justify-content-between bg-light">
-								<div class="text-success">
-									<h6 class="my-0">Total Discount</h6>
+		<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4 class="mb-3">Billing address</h4>
+            <form class="needs-validation" novalidate="" method="post" action="/submit-checkout" id="checkout-form">
+                <div class="mb-3">
+                    <label for="username">Name</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="username" placeholder="Username" required="" value="{{defaultAddress.name}}" readonly>
+                        <div class="invalid-feedback" style="width: 100%;">Your username is required.</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email">Mobile</label>
+                    <input type="email" class="form-control" id="email" placeholder="Mobile" value="{{defaultAddress.mobile}}" readonly>
+                    <div class="invalid-feedback">Please enter a valid email address for shipping updates.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="address">Address</label>
+                    <input type="text" class="form-control" id="address" placeholder="1234 Main St" value="{{defaultAddress.address}}" required="" readonly>
+                    <div class="invalid-feedback">Please enter your shipping address.</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label for="country">City</label>
+                        <input type="text" class="form-control" id="address" placeholder="1234 Main St" required="" value="{{defaultAddress.city}}" readonly>
+                        <div class="invalid-feedback">Please select a valid country.</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="state">State</label>
+                        <input type="text" class="form-control" id="address" placeholder="1234 Main St" required="" value="{{defaultAddress.state}}" readonly>
+                        <div class="invalid-feedback">Please provide a valid state.</div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="zip">Postal Code</label>
+                        <input type="text" class="form-control" id="zip" placeholder="" required="" value="{{defaultAddress.pincode}}" readonly>
+                        <div class="invalid-feedback">Zip code required.</div>
+                    </div>
+                </div>
+                <hr class="mb-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-dark btn-lg btn-block" data-toggle="modal" data-target="#changeaddress" type="button">Change Address</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+		<div class="container">
+    <div class="row">
+        {{#if products}}
+        <div class="col-md-4 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Your cart</span>
+                <span class="badge badge-secondary badge-pill">{{this.totalCount}}</span>
+            </h4>
+            <ul class="list-group mb-3 ">
+                {{#each products}}
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <div>
+                        <img src="/uploads/{{images.[0]}}" class="img-fluid" alt="Product Image" width="50px" />
+                        <h6 class="my-0">{{this.item}} x {{this.kg}}</h6>
+                    </div>
+                    <span class="text-muted">₹{{this.total}}</span>
+                </li>
+                {{/each}}
 
-								</div>
-								<span class="text-success">-₹{{this.couponDiscount}}</span>
-							</li>
-							<li class="list-group-item d-flex justify-content-between">
-								<span>Grand Total(INR)</span>
-								<strong>₹{{this.subtotal}}</strong>
-							</li>
-						</ul>
-						<form class="card p-2" action="/apply-coupon-request" method="POST">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Enter the Coupon Code Here"
-									name="couponCodeFromUser" style="width: 200px;">
-								{{#if couponApplied}}
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <div class="text-success">
+                        <h6 class="my-0">Total Discount</h6>
+                    </div>
+                    <span class="text-success">-₹{{this.couponDiscount}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Grand Total(INR)</span>
+                    <strong>₹{{this.subtotal}}</strong>
+                </li>
+            </ul>
+            <form class="card p-2" action="/apply-coupon-request" method="POST">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter the Coupon Code Here" name="couponCodeFromUser" style="width: 200px;">
+                    {{#if couponApplied}}
+                    <p style="color: #21b503;"><b>{{couponApplied}}</b></p>
+                    {{else if couponError}}
+                    <p style="color: red;"><b>{{couponError}}</b></p>
+                    {{/if}}
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-secondary">Redeem</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {{/if}}
 
-								<p style="color: #21b503;"><b>{{couponApplied}}</b></p>
+       
+    </div>
+</div>
 
-								{{else if couponError}}
 
-								<p style="color: red;"><b>{{couponError}}</b></p>
+        <div class="col-md-8 order-md-1">
+             <div class="col-md-6">
+            <!-- Cart Details -->
+            <div class="cart-detail p-3 p-md-4" style="color: black;">
+                <h3 class="billing-heading mb-4">Payment Method</h3>
+                <div class="d-block my-3">
+                    <div class="custom-control custom-radio">
+                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked="" required="" value="COD">
+                        <label class="custom-control-label" for="credit">COD</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required="" value="ONLINE">
+                        <label class="custom-control-label" for="debit">ONLINE</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input id="wallet" name="paymentMethod" type="radio" class="custom-control-input" required="" value="WALLET">
+                        <label class="custom-control-label" for="wallet">WALLET <span class="wallet-balance">(Amount in the Wallet: ₹{{walletDetails.walletAmount}})</span></label>
+                        <p id="error-message" class="text-danger"></p>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg btn-block btn-checkout" id="checkout-button" type="submit">Place an Order</button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
 
-								{{/if}}
-								<div class="input-group-append">
-									<button type="submit" class="btn btn-secondary">Redeem</button>
-								</div>
-							</div>
-						</form>
-					</div>
-					{{/if}}
-					<div class="col-md-8 order-md-1">
-						<h4 class="mb-3">Billing address</h4>
-						<form class="needs-validation" novalidate="" method="post" action="/submit-checkout"
-							id="checkout-form">
-							<div class="mb-3">
-								<label for="username">Name</label>
-								<div class="input-group">
-									<input type="text" class="form-control" id="username" placeholder="Username"
-										required="" value="{{defaultAddress.name}}" readonly>
-									<div class="invalid-feedback" style="width: 100%;">Your username is required.</div>
-								</div>
-							</div>
-							<div class="mb-3">
-								<label for="email">Mobile</label>
-								<input type="email" class="form-control" id="email" placeholder="Mobile"
-									value="{{defaultAddress.mobile}}" readonly>
-								<div class="invalid-feedback">Please enter a valid email address for shipping updates.
-								</div>
-							</div>
-							<div class="mb-3">
-								<label for="address">Address</label>
-								<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-									value="{{defaultAddress.address}}" required="" readonly>
-								<div class="invalid-feedback">Please enter your shipping address.</div>
-							</div>
-							<div class="row">
-								<div class="col-md-5 mb-3">
-									<label for="country">City</label>
-									<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-										required="" value="{{defaultAddress.city}}" readonly>
-									<div class="invalid-feedback">Please select a valid country.</div>
-								</div>
-								<div class="col-md-4 mb-3">
-									<label for="state">State</label>
-									<input type="text" class="form-control" id="address" placeholder="1234 Main St"
-										required="" value="{{defaultAddress.state}}" readonly>
-									<div class="invalid-feedback">Please provide a valid state.</div>
-								</div>
-								<div class="col-md-3 mb-3">
-									<label for="zip">Postal Code</label>
-									<input type="text" class="form-control" id="zip" placeholder="" required=""
-										value="{{defaultAddress.pincode}}" readonly>
-									<div class="invalid-feedback">Zip code required.</div>
-								</div>
-							</div>
-							<hr class="mb-4">
-							<div class="row">
-								<div class="col-md-6 mb-3">
-									<button class="btn btn-dark btn-lg btn-block" data-toggle="modal"
-										data-target="#changeaddress" type="button">Change Address</button>
-								</div>
-							</div>
-							<div class="cart-detail p-3 p-md-4" style="color: black;">
-								<h3 class="billing-heading mb-4">Payment Method</h3>
-								<div class="d-block my-3">
-									<div class="custom-control custom-radio">
-										<input id="credit" name="paymentMethod" type="radio"
-											class="custom-control-input" checked="" required="" value="COD">
-										<label class="custom-control-label" for="credit">COD</label>
-									</div>
-									<div class="custom-control custom-radio">
-										<input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
-											required="" value="ONLINE">
-										<label class="custom-control-label" for="debit">ONLINE</label>
-									</div>
-									<div class="custom-control custom-radio">
-										<input id="wallet" name="paymentMethod" type="radio"
-											class="custom-control-input" required="" value="WALLET">
-										<label class="custom-control-label" for="wallet">WALLET <span
-												class="wallet-balance">
 
-												(Amount in the Wallet: ₹{{walletDetails.walletAmount}})</span>
-
-										</label>
-										<p id="error-message" class="text-danger"></p>
-									</div>
-
-								</div>
-								<button class="btn btn-primary btn-lg btn-block btn-checkout" id="checkout-button"
-									type="submit">Place an
-									Order</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
 
 	{{!--Change Address modal--}}
@@ -436,7 +425,7 @@
 
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	// JavaScript to make Ajax call for Checkout Button - called by checkout button in place-order page
+	
 	<script>
 
 
@@ -469,9 +458,11 @@
 
 							location.href = '/wallet-placed?id=' + response.orderId
 						} else if (response.error) {
+							console.log(response.error)
 							$('#error-message').text(response.error);
+							
 						} else {
-							location.href = '/orderFailed'
+							location.href = '/orderPlaced'
 							// If any of the above payment didn't happen, Should create a failed order page to user and display
 						}
 

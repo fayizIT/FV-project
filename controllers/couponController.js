@@ -20,7 +20,6 @@ const UsedCoupon = require('../models/usedCouponModel')
 const userController = require('../controllers/userController');
 var adminController = require("../controllers/adminController");
 const userHelpers = require('../helpers/userHelpers')
-const Wallet = require("../models/walletModel");
 
 const ObjectId = mongoose.Types.ObjectId;
 

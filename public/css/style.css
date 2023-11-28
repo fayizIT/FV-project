@@ -9046,10 +9046,10 @@ h1, h2, h3, h4, h5,
   height: inherit !important; }
 
 .cart-detail {
-  width: 54%;
+  width: 100%;
     margin-left: 761px;
-    margin-top: -40px;
-  display: block;
+    margin-top: -387px;
+    display: block;
   border: 1px solid rgba(0, 0, 0, 0.05); }
   .cart-detail.cart-total {
     border: 1px solid rgba(0, 0, 0, 0.05); }

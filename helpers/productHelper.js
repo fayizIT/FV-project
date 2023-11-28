@@ -56,7 +56,7 @@ module.exports = {
   placingOrder: async (userId, orderData, orderedProducts, totalOrderValue) => {
     console.log("enter  the helper placing order");
     let orderStatus =
-      orderData["paymentMethod"] === "COD" ? "Pending" : "PENDING";
+      orderData["paymentMethod"] === "COD" ? "Pending" : "paid";
     console.log(orderStatus, "this is the order status");
     const defaultAddress = await Address.findOne(
       { user_id: userId, "addresses.is_default": true },

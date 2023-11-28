@@ -286,6 +286,8 @@ const verifyLogin = async (req, res) => {
     const { email, password } = req.body;
     const userData = await User.findOne({ email });
 
+    console.log(req.body);
+
     if (!userData) {
       return res.render('users/login', { message: "Email and password are incorrect" });
     }
